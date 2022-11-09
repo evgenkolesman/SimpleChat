@@ -13,11 +13,11 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    public List<Message> getAll() {
+    public List<Message> getAllMessages() {
         return messageRepository.findAll();
     }
 
-    public Message addMesage(Message message) {
+    public Message addMessage(Message message) {
         return messageRepository.save(message);
     }
 }

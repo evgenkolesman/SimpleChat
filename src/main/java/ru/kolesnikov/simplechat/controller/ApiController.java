@@ -12,21 +12,21 @@ import ru.kolesnikov.simplechat.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping
 @RequiredArgsConstructor
 public class ApiController {
 
     private final UserService userService;
     private final MessageService messageService;
 
-    @GetMapping("/getUsers")
+    @GetMapping("/api/v1/getUsers")
     public List<User> getAllUsers() {
-        return userService.getAll();
+        return userService.getAllUsers();
     }
 
 
-    @GetMapping("/getMessages")
+    @GetMapping("/api/v1/getMessages")
     public List<Message> getAllMessages() {
-        return messageService.getAll();
+        return messageService.getAllMessages();
     }
 }

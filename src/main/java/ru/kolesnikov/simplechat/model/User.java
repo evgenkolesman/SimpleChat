@@ -20,5 +20,5 @@ public class User {
     @Column(name = "login")
     private String login;
 
-    private String password; //maybe redundant
+//    private String password; //maybe redundant
 }

@@ -26,7 +26,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-reactor-netty</artifactId>
         </dependency>
    <!--      <dependency>
             <groupId>org.springdoc</groupId>
@@ -67,7 +75,15 @@
             <artifactId>friendly-id</artifactId>
             <version>${friendly-id.version}</version>
         </dependency>
-
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.kafka</groupId>-->
+<!--            <artifactId>spring-kafka</artifactId>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.16.0</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

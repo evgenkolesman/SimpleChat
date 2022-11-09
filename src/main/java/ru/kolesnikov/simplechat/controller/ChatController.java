@@ -3,9 +3,14 @@ package ru.kolesnikov.simplechat.controller;
 
 import com.devskiller.friendly_id.FriendlyId;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTO;
@@ -17,9 +22,9 @@ import ru.kolesnikov.simplechat.service.UserService;
 
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/chat")
+@Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
 
     private final MessageService messageService;
@@ -27,18 +32,30 @@ public class ChatController {
 
 
     @MessageMapping("/addMessage")
-    @SendTo("/public")
+    @SendTo("/topic/public")
     public Message addMessage(@Payload MessageDTO messageDTO) {
-        return messageService.addMesage(
+        log.info(messageDTO.toString());
+        return messageService.addMessage(
                 new Message(FriendlyId.toFriendlyId(UUID.randomUUID()),
-                        messageDTO.message(),
-                        messageDTO.dateOfMessage(),
-                        userService.findUserByLogin(messageDTO.login())));
+                        messageDTO.getMessageBody(),
+                        messageDTO.getDateMessage(),
+                        userService.findUserByLogin(messageDTO.getLogin())));
     }
 
     @MessageMapping("/addUser")
-    @SendTo("/public")
-    public User addUser(UserDTO user) {
-        return userService.addUser(new User(user.login(), user.password()));
+    @SendTo("/topic/public")
+    public User addUser(@Payload MessageDTO messageDTO) {
+        log.info("new user" + messageDTO.getLogin());
+
+        return userService.addUser(new User(messageDTO.getLogin()));
+    }
+
+
+    @MessageMapping("/getPermissions")
+    @SendTo("/topic/public")
+    public User getPermissions(@Payload MessageDTO messageDTO) {
+        log.info("new user" + messageDTO.getLogin());
+
+        return userService.getUser(new User(messageDTO.getLogin()));
     }
 }
