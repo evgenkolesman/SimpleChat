@@ -181,7 +181,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-#       maybe need to add bad credentials exception and status
+  #       maybe need to add bad credentials exception and status
 
 
   /api/v1/{login}/messages:
@@ -227,7 +227,7 @@ paths:
         - "Message"
       summary: "Get List of all messages by user"
       description: "Returns list of user`s messages"
-      operationId: "getAllMessages"
+      operationId: "getAllMessagesWithLogin"
       responses:
         "200":
           description: "Successful operation"
@@ -250,7 +250,7 @@ paths:
         - "Message"
       summary: "Update a message "
       description: "Update message with ID by user with login "
-      operationId: "addMessage"
+      operationId: "updateMessage"
       parameters:
         - name: "id"
           in: path
@@ -292,7 +292,7 @@ paths:
       tags:
         - "Message"
       summary: "Get message by user with Id"
-      description: "Returns the messages with current Id"
+      description: "Returns the message with current Id"
       operationId: "getMessageById"
       parameters:
         - name: "id"
@@ -313,7 +313,7 @@ paths:
           content:
             '*/*':
               schema:
-                  $ref: "#/components/schemas/MessageDTOResponse"
+                $ref: "#/components/schemas/MessageDTOResponse"
         "400":
           description: "Bad request"
           content:
@@ -354,6 +354,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
+  /api/v1/allmesages:
+    get:
+      tags:
+        - "Message"
+      summary: "Returns all messages"
+      description: "Returns all messages from Database"
+      operationId: "getAllMessages"
+      parameters:
+        - name: "dateStart"
+          in: "query"
+          description: "Start date of range"
+          schema:
+            type: "string"
+            format: "dateTime"
+            example: "2022-10-01T19:00:00-01:00"
+        - name: "dateEnd"
+          in: "query"
+          description: "End date of range"
+          schema:
+                type: "string"
+                format: "dateTime"
+                example: "2022-10-01T19:00:00-01:00"
+      responses:
+          "200":
+            description: "Successful operation"
+            content:
+              '*/*':
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/MessageDTOResponse"
+          "400":
+            description: "Bad request"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorModel"
 
 components:
   schemas:
@@ -386,6 +423,7 @@ components:
           type: "string"
           example: "PhotoPath"
           description: "Path were we can get a photo of user"
+
     UserDTOResponse:
       type: "object"
       required:
@@ -398,33 +436,32 @@ components:
           example: "login"
           description: "Unique login of user"
         name:
-            type: "string"
-            example: "Name"
-            description: "Name of user"
+          type: "string"
+          example: "Name"
+          description: "Name of user"
         photoPath:
           type: "string"
           example: "PhotoPath"
           description: "Path were we can get a photo of user"
 
     UserDTOAuth:
-          type: "object"
-          required:
-            - login
-            - password
-          properties:
-            login:
-              type: "string"
-              example: "login"
-              description: "Unique login of user"
-            password:
-                type: "string"
-                example: "Password"
-                description: "Password of user"
-# TODO maybe need to update
-    MessageDTORequest:
       type: "object"
       required:
         - login
+        - password
+      properties:
+        login:
+          type: "string"
+          example: "login"
+          description: "Unique login of user"
+        password:
+          type: "string"
+          example: "Password"
+          description: "Password of user"
+
+    MessageDTORequest:
+      type: "object"
+      required:
         - messageBody
         - dateMessage
       properties:
@@ -438,7 +475,7 @@ components:
           description: "Message text"
         dateMessage:
           type: "string"
-          format: "date"
+          format: "dateTime"
     MessageDTOResponse:
       type: "object"
       required:
@@ -461,7 +498,7 @@ components:
           description: "Message text"
         dateMessage:
           type: "string"
-          format: "date"
+          format: "dateTime"
 
     ErrorModel:
       type: object

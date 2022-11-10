@@ -11,15 +11,11 @@ import java.time.Instant;
 @ToString
 public final class MessageDTORequest {
 
-    @NonNull
-    private final String login;
-
     private final String messageBody;
 
     private final Instant dateMessage;
 
     public MessageDTORequest(String login, String messageBody) {
-        this.login = login;
         this.messageBody = messageBody;
         this.dateMessage = Instant.now();
     }

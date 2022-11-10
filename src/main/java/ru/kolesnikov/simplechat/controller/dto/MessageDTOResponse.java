@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import ru.kolesnikov.simplechat.model.Message;
 
 import java.time.Instant;
 
@@ -19,6 +20,5 @@ public final class MessageDTOResponse {
     private final String messageBody;
 
     private final Instant dateMessage;
-
 
 }
