@@ -15,7 +15,6 @@ import java.time.Instant;
 public class Message {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @Column(name = "messageBody", nullable = false)

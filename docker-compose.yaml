@@ -10,11 +10,11 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "Password"
       PG_DATA: ./snap/postgres/data/pgdata
-  rabbitmq:
-    image: rabbitmq:3.11.2-alpine
-    container_name: rabbitmq
-    ports:
-      - "61613:61613"
-    environment:
-      RABBITMQ_DEFAULT_USER: "guest"
-      RABBITMQ_DEFAULT_PASS: "guest"
+#  rabbitmq:
+#    image: rabbitmq:3.11.2-alpine
+#    container_name: rabbitmq
+#    ports:
+#      - "61613:61613"
+#    environment:
+#      RABBITMQ_DEFAULT_USER: "guest"
+#      RABBITMQ_DEFAULT_PASS: "guest"

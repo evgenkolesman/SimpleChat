@@ -2,7 +2,9 @@ package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.kolesnikov.simplechat.controller.dto.UserDTOAuth;
 import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
+import ru.kolesnikov.simplechat.exceptions.UserWasRegisteredException;
 import ru.kolesnikov.simplechat.model.User;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
@@ -19,14 +21,54 @@ public class UserService {
     }
 
     public User findUserByLogin(String login) {
-        return userRepository.findById(login).orElseThrow(UserNotFoundException::new);
+        return userRepository
+                .findById(login)
+                .orElseThrow(() -> new UserNotFoundException(login));
     }
 
-    public User addUser(User user) {
-        return userRepository.save(user);
+    public boolean findUserByLoginPresent(String login) {
+        return userRepository
+                .findById(login)
+                .isPresent();
     }
 
     public User getUser(User user) {
-        return userRepository.findById(user.getLogin()).orElseThrow(UserNotFoundException::new);
+        String login = user.getLogin();
+        return userRepository
+                .findById(login)
+                .orElseThrow(() -> new UserNotFoundException(login));
+    }
+
+    public User addUser(User user) {
+        if (findUserByLoginPresent(user.getLogin())) {
+            throw new UserWasRegisteredException(user.getLogin());
+        }
+        return userRepository.save(user);
+    }
+
+
+    public User updateUser(String login, User user) {
+        if (!findUserByLoginPresent(login)) {
+            throw new UserNotFoundException(user.getLogin());
+        }
+         if (findUserByLoginPresent(user.getLogin())
+         && findUserByLogin(login)
+                 .equals(findUserByLogin(user.getLogin()))) {
+            throw new UserNotFoundException(user.getLogin());
+        }
+
+        return userRepository.save(user);
+    }
+
+       public void deleteUser(String login) {
+           userRepository.delete(findUserByLogin(login));
+       }
+
+    public boolean checkAuthorization(UserDTOAuth user) {
+        return userRepository
+                .findUserByLoginAndPassword(
+                        user.getLogin(),
+                        user.getPassword())
+                .isPresent();
     }
 }

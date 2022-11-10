@@ -18,6 +18,7 @@
         <testcontainers.version>1.17.4</testcontainers.version>
         <springdoc.openapi.version>1.6.8</springdoc.openapi.version>
         <friendly-id.version>1.1.0</friendly-id.version>
+        <rest-assured.version>5.0.1</rest-assured.version>
     </properties>
     <dependencies>
         <dependency>
@@ -36,12 +37,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-reactor-netty</artifactId>
         </dependency>
-   <!--      <dependency>
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc.openapi.version}</version>
-        </dependency>-->
-
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -58,10 +58,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
@@ -75,14 +71,15 @@
             <artifactId>friendly-id</artifactId>
             <version>${friendly-id.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.kafka</groupId>-->
-<!--            <artifactId>spring-kafka</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.kafka</groupId>-->
+        <!--            <artifactId>spring-kafka</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.16.0</version>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>

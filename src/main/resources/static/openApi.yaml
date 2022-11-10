@@ -1,0 +1,484 @@
+openapi: "3.0.0"
+info:
+  description: "This is Passport API for my practicing"
+  version: "1.0.0"
+  title: "PassportApi"
+  termsOfService: "http://localhost:8080/api/v1"
+  contact:
+    email: "evgeniy.kolesnikov@sperasoft.com"
+
+tags:
+  - name: "User"
+    description: "Everything about Users"
+  - name: "Message"
+    description: "Everything about Message"
+  - name: "Authorization"
+    description: "Will be used to Auth user"
+
+paths:
+  /api/v1/users:
+    post:
+      tags:
+        - "User"
+      summary: "Add a new user to the store"
+      description: "Add new user for registration"
+      operationId: "addUser"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserDTORegistration'
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDTOResponse"
+        "400":
+          description: "Validation person data problem"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    get:
+      tags:
+        - "User"
+      summary: "Get List of all users"
+      description: "Returns list of users"
+      operationId: "getAllUsers"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDTOResponse"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
+  /api/v1/users/{login}:
+    get:
+      tags:
+        - "User"
+      summary: "Find person by ID"
+      description: "Returns a single person with current ID"
+      operationId: "getUserByLogin"
+      parameters:
+        - name: "login"
+          in: "path"
+          description: "Login"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDTOResponse"
+        "404":
+          description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    put:
+      tags:
+        - "User"
+      summary: "Updates a user in the store with form data"
+      description: "Updates user details with current login"
+      operationId: "updateUser"
+      parameters:
+        - name: "login"
+          in: path
+          description: "Login"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserDTORegistration'
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PersonResponse"
+        "400":
+          description: "Validation problems"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: "Person not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    delete:
+      tags:
+        - "User"
+      summary: "Delete a user"
+      description: "Delete a user with current login"
+      operationId: "deletePerson"
+      parameters:
+        - name: "Login"
+          in: "path"
+          description: "User`s login to delete"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "204":
+          description: "Successful operation"
+        "404":
+          description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
+  /api/v1/auth:
+    post:
+      tags:
+        - "Authorization"
+      summary: "Check Authorization"
+      description: "Check user is present and correction of password"
+      operationId: "checkUserAuthorization"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UserDTOAuth'
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: boolean
+        "400":
+          description: "Validation person data problem"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+#       maybe need to add bad credentials exception and status
+
+
+  /api/v1/{login}/messages:
+    post:
+      tags:
+        - "Message"
+      summary: "Add a new message "
+      description: "Add new message by user with login"
+      operationId: "addMessage"
+      parameters:
+        - name: "login"
+          in: path
+          description: "Login"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/MessageDTORequest'
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessageDTOResponse"
+        "400":
+          description: "Validation message data problem"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    get:
+      tags:
+        - "Message"
+      summary: "Get List of all messages by user"
+      description: "Returns list of user`s messages"
+      operationId: "getAllMessages"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageDTOResponse"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
+  /api/v1/{login}/messages/{id}:
+    put:
+      tags:
+        - "Message"
+      summary: "Update a message "
+      description: "Update message with ID by user with login "
+      operationId: "addMessage"
+      parameters:
+        - name: "id"
+          in: path
+          description: "Message ID"
+          required: true
+          schema:
+            type: string
+        - name: "login"
+          in: "path"
+          description: "User`s login"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/MessageDTORequest'
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MessageDTOResponse"
+        "400":
+          description: "Validation message data problem"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: "Message not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    get:
+      tags:
+        - "Message"
+      summary: "Get message by user with Id"
+      description: "Returns the messages with current Id"
+      operationId: "getMessageById"
+      parameters:
+        - name: "id"
+          in: path
+          description: "Message ID"
+          required: true
+          schema:
+            type: string
+        - name: "login"
+          in: "path"
+          description: "User`s login"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                  $ref: "#/components/schemas/MessageDTOResponse"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: "Message not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    delete:
+      tags:
+        - "Message"
+      summary: "Delete current message"
+      description: "Delete current message with Id"
+      operationId: "deleteMessage"
+      parameters:
+        - name: "id"
+          in: path
+          description: "Message ID to delete"
+          required: true
+          schema:
+            type: string
+        - name: "login"
+          in: "path"
+          description: "User`s login"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "204":
+          description: "Successful operation"
+        "404":
+          description: "Message not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
+components:
+  schemas:
+    UserDTORegistration:
+      type: "object"
+      required:
+        - login
+        - name
+        - surname
+        - password
+        - photoPath
+      properties:
+        login:
+          type: "string"
+          example: "login"
+          description: "Unique login of user"
+        name:
+          type: "string"
+          example: "Name"
+          description: "Name of user"
+        surname:
+          type: "string"
+          example: "Surname"
+          description: "Surname of user"
+        password:
+          type: "string"
+          example: "Password"
+          description: "Password of user"
+        photoPath:
+          type: "string"
+          example: "PhotoPath"
+          description: "Path were we can get a photo of user"
+    UserDTOResponse:
+      type: "object"
+      required:
+        - login
+        - name
+        - photoPath
+      properties:
+        login:
+          type: "string"
+          example: "login"
+          description: "Unique login of user"
+        name:
+            type: "string"
+            example: "Name"
+            description: "Name of user"
+        photoPath:
+          type: "string"
+          example: "PhotoPath"
+          description: "Path were we can get a photo of user"
+
+    UserDTOAuth:
+          type: "object"
+          required:
+            - login
+            - password
+          properties:
+            login:
+              type: "string"
+              example: "login"
+              description: "Unique login of user"
+            password:
+                type: "string"
+                example: "Password"
+                description: "Password of user"
+# TODO maybe need to update
+    MessageDTORequest:
+      type: "object"
+      required:
+        - login
+        - messageBody
+        - dateMessage
+      properties:
+        login:
+          type: "string"
+          example: "Login"
+          description: "Users login"
+        messageBody:
+          type: "string"
+          example: "My message"
+          description: "Message text"
+        dateMessage:
+          type: "string"
+          format: "date"
+    MessageDTOResponse:
+      type: "object"
+      required:
+        - id
+        - login
+        - messageBody
+        - dateMessage
+      properties:
+        id:
+          type: "string"
+          example: "13246fhusad"
+          description: "Message ID"
+        login:
+          type: "string"
+          example: "Login"
+          description: "Users login"
+        messageBody:
+          type: "string"
+          example: "My message"
+          description: "Message text"
+        dateMessage:
+          type: "string"
+          format: "date"
+
+    ErrorModel:
+      type: object
+      properties:
+        errorId:
+          type: string
+          example: "2132sada343"
+        message:
+          type: string
+          example: "This Person not found"
+        status:
+          type: string
+          example: "Not found"
+      required:
+        - errorId
+        - message
+        - status
+#externalDocs:
+#  description: "Find out data of response"
+#  url: "http://swagger.io"
