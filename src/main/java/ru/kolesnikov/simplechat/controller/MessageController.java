@@ -25,7 +25,7 @@ public class MessageController {
     private final UserService userService;
 
 
-    @PostMapping ( "/api/v1/{login}/messages")
+    @PostMapping ( "/api/v1/user/{login}/messages")
     public MessageDTOResponse addMessage(@PathVariable String login,
                                          @RequestBody MessageDTORequest messageDTORequest)  {
         Message message = messageService.addMessage(
@@ -44,7 +44,7 @@ public class MessageController {
         );
     }
 
-    @GetMapping("/api/v1/{login}/messages")
+    @GetMapping("/api/v1/user/{login}/messages")
     public List<MessageDTOResponse> getAllMessagesWithLogin(@PathVariable String login) {
         return messageService.getAllMessages(login).stream()
                 .map(message ->
@@ -56,7 +56,7 @@ public class MessageController {
                 )).collect(Collectors.toList());
     }
 
-    @PutMapping("/api/v1/{login}/messages/{id}")
+    @PutMapping("/api/v1/user/{login}/messages/{id}")
     public MessageDTOResponse updateMessage(@PathVariable String login,
                                             @PathVariable String id,
                                             @RequestBody MessageDTORequest messageDTORequest) {
@@ -74,7 +74,7 @@ public class MessageController {
         );
     }
 
-    @GetMapping("/api/v1/{login}/messages/{id}")
+    @GetMapping("/api/v1/user/{login}/messages/{id}")
     public MessageDTOResponse getMessageById(@PathVariable String id) {
         Message message = messageService.getMessageById(id);
 
@@ -86,26 +86,15 @@ public class MessageController {
         );
     }
 
-    @DeleteMapping ("/api/v1/{login}/messages/{id}")
+    @DeleteMapping ("/api/v1/user/{login}/messages/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMessage(@PathVariable String id) {
         messageService.deleteMessage(id);
     }
-//
-//    @GetMapping("/api/v1/allmesages")
-//    public List<MessageDTOResponse> getAllMessagesWithLogin() {
-//        return messageService.getAllMessages().stream()
-//                .map(message ->
-//                new MessageDTOResponse(
-//                        message.getId(),
-//                        message.getUser().getLogin(),
-//                        message.getMessageBody(),
-//                        message.getDateOfMessage()
-//                )).collect(Collectors.toList());
-//    }
 
-    @GetMapping("/api/v1/allmesages")
-    public List<MessageDTOResponse> getAllMessagesWithLogin(@RequestParam(name = "dateStart")
+
+    @GetMapping("/api/v1/allmessages")
+    public List<MessageDTOResponse> getAllMessages(@RequestParam(name = "dateStart")
                                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                                 @Nullable Instant dateStart,
                                                             @RequestParam(name = "dateEnd")

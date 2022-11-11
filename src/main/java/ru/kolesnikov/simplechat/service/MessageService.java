@@ -2,6 +2,7 @@ package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.kolesnikov.simplechat.exceptions.MessageNotFoundException;
 import ru.kolesnikov.simplechat.model.Message;
 import ru.kolesnikov.simplechat.repository.MessageRepository;
 
@@ -40,14 +41,28 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message) {
+       if (checkGetMessageById(message.getId())) {
+       throw new MessageNotFoundException(message.getId());
+       }
         return messageRepository.save(message);
     }
 
     public Message getMessageById(String id) {
-        return messageRepository.findMessageById(id);
+        return messageRepository
+                .findMessageById(id)
+                .orElseThrow(() -> new MessageNotFoundException(id));
+    }
+
+    public boolean checkGetMessageById(String id) {
+        return messageRepository
+                .findMessageById(id)
+                .isPresent();
     }
 
     public void deleteMessage(String id) {
+        if (checkGetMessageById(id)) {
+            throw new MessageNotFoundException(id);
+        }
         messageRepository.deleteById(id);
     }
 }

@@ -9,13 +9,13 @@ import java.time.Instant;
 
 @Getter
 @ToString
-public final class MessageDTORequest {
+public class MessageDTORequest {
 
     private final String messageBody;
 
     private final Instant dateMessage;
 
-    public MessageDTORequest(String login, String messageBody) {
+    public MessageDTORequest(String messageBody) {
         this.messageBody = messageBody;
         this.dateMessage = Instant.now();
     }

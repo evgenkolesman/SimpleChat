@@ -7,6 +7,7 @@ import ru.kolesnikov.simplechat.model.User;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, String> {
@@ -15,7 +16,7 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     List<Message> findAllByDateOfMessageAfterAndDateOfMessageBefore(Instant startDate, Instant EndDate);
 
-    Message findMessageById(String id);
+    Optional<Message> findMessageById(String id);
 
 
 }

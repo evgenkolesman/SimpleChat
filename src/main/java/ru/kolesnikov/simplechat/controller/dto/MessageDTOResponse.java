@@ -11,7 +11,7 @@ import java.time.Instant;
 @Getter
 @ToString
 @RequiredArgsConstructor
-public final class MessageDTOResponse {
+public class MessageDTOResponse {
 
     private final String id;
 

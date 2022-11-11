@@ -11,6 +11,7 @@ import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.User;
 import ru.kolesnikov.simplechat.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class UserController {
 
 //    Registration
     @PostMapping(value = "/api/v1/user")
-    public UserDTOResponse addUser(@RequestBody UserDTORegistration user) {
+    public UserDTOResponse addUser(@RequestBody @Valid UserDTORegistration user) {
         userService.addUser(
                 new User(user.getLogin(),
                         user.getName(),
@@ -59,7 +60,7 @@ public class UserController {
 
    @PutMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse updateUser(@PathVariable String login,
-                                      @RequestBody UserDTORegistration user) {
+                                      @RequestBody  @Valid UserDTORegistration user) {
         userService.updateUser(
                 login,
                 new User(user.getLogin(),
