@@ -1,23 +1,5 @@
 package ru.kolesnikov.simplechat.controller.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-
-import java.time.Instant;
-
-@Getter
-@ToString
-public class MessageDTORequest {
-
-    private final String messageBody;
-
-    private final Instant dateMessage;
-
-    public MessageDTORequest(String messageBody) {
-        this.messageBody = messageBody;
-        this.dateMessage = Instant.now();
-    }
+public record MessageDTORequest(String messageBody) {
 
 }

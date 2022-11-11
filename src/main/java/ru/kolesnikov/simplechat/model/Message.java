@@ -21,7 +21,7 @@ public class Message {
     private String messageBody;
 
     @Column(name = "dateOfMessage", nullable = false)
-    private Instant dateOfMessage; //TODO maybe need to change type
+    private Instant dateOfMessage;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "foreign_key_login")

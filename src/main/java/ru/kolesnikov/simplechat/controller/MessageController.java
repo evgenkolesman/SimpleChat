@@ -13,6 +13,7 @@ import ru.kolesnikov.simplechat.service.MessageService;
 import ru.kolesnikov.simplechat.service.UserService;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,15 +25,14 @@ public class MessageController {
     private final MessageService messageService;
     private final UserService userService;
 
-
     @PostMapping ( "/api/v1/user/{login}/messages")
     public MessageDTOResponse addMessage(@PathVariable String login,
                                          @RequestBody MessageDTORequest messageDTORequest)  {
         Message message = messageService.addMessage(
                 new Message(
                 FriendlyId.createFriendlyId(),
-                messageDTORequest.getMessageBody(),
-                messageDTORequest.getDateMessage(),
+                messageDTORequest.messageBody(),
+                Instant.now().truncatedTo(ChronoUnit.MICROS),
                 userService.findUserByLogin(login)
         ));
 
@@ -62,8 +62,8 @@ public class MessageController {
                                             @RequestBody MessageDTORequest messageDTORequest) {
         Message message = messageService.updateMessage(
                 new Message(id,
-                messageDTORequest.getMessageBody(),
-                messageDTORequest.getDateMessage(),
+                messageDTORequest.messageBody(),
+                Instant.now().truncatedTo(ChronoUnit.MICROS),
                 userService.findUserByLogin(login)));
 
         return new MessageDTOResponse(
@@ -75,8 +75,9 @@ public class MessageController {
     }
 
     @GetMapping("/api/v1/user/{login}/messages/{id}")
-    public MessageDTOResponse getMessageById(@PathVariable String id) {
-        Message message = messageService.getMessageById(id);
+    public MessageDTOResponse getMessageById(@PathVariable String login,
+                                             @PathVariable String id) {
+        Message message = messageService.getMessageById(login, id);
 
         return new MessageDTOResponse(
                 message.getId(),

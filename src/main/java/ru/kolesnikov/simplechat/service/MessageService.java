@@ -3,10 +3,11 @@ package ru.kolesnikov.simplechat.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kolesnikov.simplechat.exceptions.MessageNotFoundException;
+import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.model.Message;
 import ru.kolesnikov.simplechat.repository.MessageRepository;
 
-import java.time.Instant;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class MessageService {
         if(Optional.ofNullable(dateStart).isEmpty() && Optional.ofNullable(dateEnd).isEmpty() ){
             return getAllMessages();
         } else if (Optional.ofNullable(dateStart).isEmpty()) {
-            dateStart = dateEnd;
+            dateStart = LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         } else if (Optional.ofNullable(dateEnd).isEmpty()) {
             dateEnd = Instant.now();
         }
@@ -47,7 +48,10 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public Message getMessageById(String id) {
+    public Message getMessageById(String login, String id) {
+        if (!userService.findUserByLoginPresent(login)) {
+            throw new UserNotFoundException(login);
+        }
         return messageRepository
                 .findMessageById(id)
                 .orElseThrow(() -> new MessageNotFoundException(id));
@@ -56,7 +60,7 @@ public class MessageService {
     public boolean checkGetMessageById(String id) {
         return messageRepository
                 .findMessageById(id)
-                .isPresent();
+                .isEmpty();
     }
 
     public void deleteMessage(String id) {

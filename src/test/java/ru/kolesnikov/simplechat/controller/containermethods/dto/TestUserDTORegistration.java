@@ -1,4 +1,4 @@
-package ru.kolesnikov.simplechat.controller.container.dto;
+package ru.kolesnikov.simplechat.controller.containermethods.dto;
 
 import lombok.Data;
 

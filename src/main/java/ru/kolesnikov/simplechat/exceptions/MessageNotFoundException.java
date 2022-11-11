@@ -8,6 +8,6 @@ import java.util.UUID;
 public class MessageNotFoundException extends RuntimeException {
 
     public MessageNotFoundException(String id) {
-        super(MessageFormat.format("{0} {1} not found", FriendlyId.toFriendlyId(UUID.randomUUID()), id));
+        super(MessageFormat.format("{0} Problems with message ID: {1} not found", FriendlyId.toFriendlyId(UUID.randomUUID()), id));
     }
 }

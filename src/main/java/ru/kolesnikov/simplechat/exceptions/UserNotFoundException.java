@@ -9,6 +9,6 @@ import java.util.UUID;
 public class UserNotFoundException extends RuntimeException {
 
     public UserNotFoundException(String login) {
-        super(MessageFormat.format("{0} {1} not found", FriendlyId.toFriendlyId(UUID.randomUUID()), login));
+        super(MessageFormat.format("{0} Problems with user login: {1} not found", FriendlyId.toFriendlyId(UUID.randomUUID()), login));
     }
 }
