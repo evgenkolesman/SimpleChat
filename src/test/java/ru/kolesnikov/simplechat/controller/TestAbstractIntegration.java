@@ -15,6 +15,7 @@ public abstract class TestAbstractIntegration {
     @BeforeAll
     static void init() {
         TestContainersInitializer.container.start();
+        TestContainersInitializer.kafka.start();
     }
 
 }

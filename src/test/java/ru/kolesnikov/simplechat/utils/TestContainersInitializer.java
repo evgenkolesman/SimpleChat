@@ -21,7 +21,8 @@ public class TestContainersInitializer {
             TestPropertyValues.of(
                     "spring.datasource.url=" + container.getJdbcUrl(),
                     "spring.datasource.username=" + container.getUsername(),
-                    "spring.datasource.password=" + container.getPassword()
+                    "spring.datasource.password=" + container.getPassword(),
+                    "spring.kafka.bootstrap-servers=" + kafka.getBootstrapServers()
             ).applyTo(applicationContext);
         }
     }

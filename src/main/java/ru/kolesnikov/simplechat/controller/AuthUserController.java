@@ -19,14 +19,20 @@ import static ru.kolesnikov.simplechat.kafka.KafkaTopicConfig.KAFKA_TOPIC;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUserController {
-    private final KafkaTemplate<String, Boolean> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final UserService userService;
 
     @PostMapping(value = "/api/v1/auth")
     public boolean checkUserAuthorization(@RequestBody @Valid UserDTOAuth user) {
-        Boolean data = userService.checkAuthorization(user);
+        String data;
+        boolean checkAuthorization = userService.checkAuthorization(user);
+        if(checkAuthorization){
+            data = "AUTHORIZATION_TOKEN";
+        } else {
+            data = "NOT AUTHORIZED";
+        }
         kafkaTemplate.send(KAFKA_TOPIC,
                 data);
-        return data;
+        return checkAuthorization;
     }
 }
