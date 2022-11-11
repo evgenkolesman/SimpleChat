@@ -5,15 +5,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 import ru.kolesnikov.simplechat.controller.dto.UserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
+import ru.kolesnikov.simplechat.kafka.KafkaListeners;
 import ru.kolesnikov.simplechat.model.User;
 import ru.kolesnikov.simplechat.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.kolesnikov.simplechat.kafka.KafkaTopicConfig.KAFKA_TOPIC;
 
 @RestController
 @RequestMapping
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final KafkaListeners listeners;
 
     @GetMapping(value = "/api/v1/user")
     public List<UserDTOResponse> getAllUsers() {
