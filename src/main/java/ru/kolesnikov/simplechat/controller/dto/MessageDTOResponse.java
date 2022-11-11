@@ -1,15 +1,13 @@
 package ru.kolesnikov.simplechat.controller.dto;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import ru.kolesnikov.simplechat.model.Message;
 
 import java.time.Instant;
 
 @Getter
 @ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class MessageDTOResponse {
 

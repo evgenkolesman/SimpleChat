@@ -1,4 +1,4 @@
-package ru.kolesnikov.simplechat.controller.container;
+package ru.kolesnikov.simplechat.controller.containermethods;
 
 import io.restassured.response.ValidatableResponse;
 import org.springframework.http.MediaType;

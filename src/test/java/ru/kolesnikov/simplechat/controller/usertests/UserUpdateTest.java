@@ -1,4 +1,4 @@
-package ru.kolesnikov.simplechat.controller.UserTests;
+package ru.kolesnikov.simplechat.controller.usertests;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
@@ -6,14 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import ru.kolesnikov.simplechat.controller.container.ContainerUserTestMethods;
-import ru.kolesnikov.simplechat.controller.container.TestAbstractIntegration;
-import ru.kolesnikov.simplechat.controller.container.dto.TestUserDTORegistration;
+import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
+import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UserUpdateTest extends TestAbstractIntegration {
@@ -63,7 +64,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
     }
 
     @Test
-    void addUserCorrectTest() {
+    void updateUserCorrectTest() {
         var name = "name1";
         var login = "login1";
         var surname = "surname1";
@@ -87,23 +88,55 @@ public class UserUpdateTest extends TestAbstractIntegration {
     }
 
 
-//    @Test
-//    void addUserEmptyLoginTest() {
-//        var name = "name";
-//        var login = "";
-//        var photoPath = "photoPath";
-//        var errorModel = containerUserTestMethods.addUser(new TestUserDTORegistration(login,
-//                        name,
-//                        "surname",
-//                        "password"
-//                        , photoPath
-//                )).assertThat().statusCode(400)
-//                .extract().response()
-//                .as(ErrorModel.class);
-//
-//        assertThat("Wrong error message", errorModel.getMessage(), equalTo(LOGIN_EMPTY_MESSAGE));
-//
-//    }
+    @Test
+    void updateUserBadLoginTest() {
+        var name = "name";
+        var login = "login1";
+        var surname = "surname1";
+        var photoPath = "photoPath1";
+        var password = "password1";
+        TestUserDTORegistration userRegistrationUpdate = new TestUserDTORegistration(
+                login,
+                name,
+                surname,
+                password,
+                photoPath
+        );
+
+        var errorModel = containerUserTestMethods.updateUser(
+                        "anyLogin",
+                        userRegistrationUpdate).assertThat()
+                .statusCode(404)
+                .extract().as(ErrorModel.class);
+        assertThat("Wrong error message", errorModel.getMessage(),
+                containsString("Problems with user login: login1 not found"));
+   }
+
+    @Test
+    void updateUserBadLoginBothTest() {
+        var name = "name";
+        var login = "login1";
+        var surname = "surname1";
+        var photoPath = "photoPath1";
+        var password = "password1";
+        TestUserDTORegistration userRegistrationUpdate = new TestUserDTORegistration(
+                login,
+                name,
+                surname,
+                password,
+                photoPath
+        );
+
+        var errorModel = containerUserTestMethods.updateUser(
+                        "login1",
+                        userRegistrationUpdate).assertThat()
+                .statusCode(404)
+                .extract().as(ErrorModel.class);
+        assertThat("Wrong error message", errorModel.getMessage(),
+                containsString("Problems with user login: login1 not found"));
+   }
+
+
 
 
 }

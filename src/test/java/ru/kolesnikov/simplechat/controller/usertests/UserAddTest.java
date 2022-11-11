@@ -1,4 +1,4 @@
-package ru.kolesnikov.simplechat.controller.UserTests;
+package ru.kolesnikov.simplechat.controller.usertests;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import ru.kolesnikov.simplechat.controller.container.ContainerUserTestMethods;
-import ru.kolesnikov.simplechat.controller.container.TestAbstractIntegration;
-import ru.kolesnikov.simplechat.controller.container.dto.TestUserDTORegistration;
+import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
+import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
 import ru.kolesnikov.simplechat.repository.UserRepository;
@@ -101,7 +101,8 @@ public class UserAddTest extends TestAbstractIntegration {
                 )).assertThat().statusCode(400)
                 .extract().as(ErrorModel.class);
 
-        assertThat("Wrong error message", errorModel.getMessage(), containsString("login was already registered"));
+        assertThat("Wrong error message", errorModel.getMessage(),
+                containsString("login was already registered"));
     }
 
     @Test

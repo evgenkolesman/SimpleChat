@@ -1,9 +1,9 @@
-package ru.kolesnikov.simplechat.controller.container;
+package ru.kolesnikov.simplechat.controller.containermethods;
 
 import io.restassured.response.ValidatableResponse;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import ru.kolesnikov.simplechat.controller.container.dto.TestUserDTOAuth;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.utils.UriComponentsBuilderUtil;
 
 import static io.restassured.RestAssured.given;
