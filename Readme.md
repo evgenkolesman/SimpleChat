@@ -1,6 +1,6 @@
 [![Java CI with Maven](https://github.com/evgenkolesman/SimpleChat/actions/workflows/maven.yml/badge.svg)](https://github.com/evgenkolesman/SimpleChat/actions/workflows/maven.yml)
 
-#SimpleChat
+#  SimpleChat
 
 1.     OpenApi доки после запуска приложения тут: 
 
@@ -34,6 +34,7 @@ OpenApi
 ну или ручками в идее запустить
 
 PS: если есть проблемы с портами в линухе, пример:
+
 Проблема с портом 5432:
 
 `fuser -vn tcp 5432`
