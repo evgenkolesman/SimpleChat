@@ -24,15 +24,15 @@ public class AuthUserController {
 
     @PostMapping(value = "/api/v1/auth")
     public boolean checkUserAuthorization(@RequestBody @Valid UserDTOAuth user) {
-        String data;
+
         boolean checkAuthorization = userService.checkAuthorization(user);
         if(checkAuthorization){
-            data = "AUTHORIZATION_TOKEN";
+            kafkaTemplate.send(KAFKA_TOPIC,
+                    "AUTHORIZATION_TOKEN");
         } else {
-            data = "NOT AUTHORIZED";
+            log.info("NOT AUTHORIZED");
         }
-        kafkaTemplate.send(KAFKA_TOPIC,
-                data);
+
         return checkAuthorization;
     }
 }
