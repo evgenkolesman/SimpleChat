@@ -1,6 +1,6 @@
 [![Java CI with Maven](https://github.com/evgenkolesman/SimpleChat/actions/workflows/maven.yml/badge.svg)](https://github.com/evgenkolesman/SimpleChat/actions/workflows/maven.yml)
 
-#SimpleChat
+#  SimpleChat
 
 1.     OpenApi доки после запуска приложения тут: 
 
