@@ -1,11 +1,12 @@
 openapi: "3.0.0"
 info:
-  description: "This is Passport API for my practicing"
   version: "1.0.0"
-  title: "PassportApi"
-  termsOfService: "http://localhost:8080/api/v1"
+  title: "SimpleChat"
+  description: "This is SimpleChat API for test task"
   contact:
-    email: "evgeniy.kolesnikov@sperasoft.com"
+    name: Kolesnikov Evgeniy
+    url: https://github.com/evgenkolesman
+    email: "evgeniysanich@mail.ru"
 
 tags:
   - name: "User"
@@ -120,7 +121,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/PersonResponse"
+                $ref: "#/components/schemas/UserDTOResponse"
         "400":
           description: "Validation problems"
           content:
@@ -140,7 +141,7 @@ paths:
       description: "Delete a user with current login"
       operationId: "deletePerson"
       parameters:
-        - name: "Login"
+        - name: "login"
           in: "path"
           description: "User`s login to delete"
           required: true
@@ -228,6 +229,13 @@ paths:
       summary: "Get List of all messages by user"
       description: "Returns list of user`s messages"
       operationId: "getAllMessagesWithLogin"
+      parameters:
+        - name: "login"
+          in: path
+          description: "Login"
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: "Successful operation"
@@ -373,24 +381,24 @@ paths:
           in: "query"
           description: "End date of range"
           schema:
-                type: "string"
-                format: "dateTime"
-                example: "2022-10-01T19:00:00-01:00"
+            type: "string"
+            format: "dateTime"
+            example: "2022-10-01T19:00:00-01:00"
       responses:
-          "200":
-            description: "Successful operation"
-            content:
-              '*/*':
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/MessageDTOResponse"
-          "400":
-            description: "Bad request"
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/ErrorModel"
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageDTOResponse"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
 
 components:
   schemas:
@@ -433,7 +441,7 @@ components:
       properties:
         login:
           type: "string"
-          example: "login"
+          example: "Login"
           description: "Unique login of user"
         name:
           type: "string"
@@ -452,7 +460,7 @@ components:
       properties:
         login:
           type: "string"
-          example: "login"
+          example: "Login"
           description: "Unique login of user"
         password:
           type: "string"
