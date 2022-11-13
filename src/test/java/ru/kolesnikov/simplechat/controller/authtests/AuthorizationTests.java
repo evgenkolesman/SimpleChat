@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
-import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
@@ -128,7 +128,7 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 equalTo("Invalid data: password must be minimum 8 characters long"));
     }
 
-@Test
+    @Test
     void checkUserAuthorizationNotCorrectLoginNull() {
         var errorModel = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(null,

@@ -66,7 +66,7 @@ public class RestResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
- @ExceptionHandler
+    @ExceptionHandler
     protected ResponseEntity<ErrorModel> handleException(NotAuthorizedException exception) {
         var errorId = FriendlyId.createFriendlyId();
         var errorMessage = "You should be logged to logout";
@@ -76,7 +76,6 @@ public class RestResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
     }
-
 
 
 }

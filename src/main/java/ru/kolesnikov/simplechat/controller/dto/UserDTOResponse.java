@@ -2,7 +2,6 @@ package ru.kolesnikov.simplechat.controller.dto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

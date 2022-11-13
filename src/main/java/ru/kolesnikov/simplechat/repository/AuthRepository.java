@@ -10,13 +10,9 @@ import java.util.List;
 @Repository
 public interface AuthRepository extends JpaRepository<AccessModel, Long> {
 
-
     boolean existsAccessModelByLogin(User userByLogin);
 
     AccessModel findByLogin(User login);
 
     List<AccessModel> findAll();
-
-
-//    boolean findAllByUser(User user);
 }

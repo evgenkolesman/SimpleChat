@@ -1,7 +1,6 @@
 package ru.kolesnikov.simplechat.controller.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;

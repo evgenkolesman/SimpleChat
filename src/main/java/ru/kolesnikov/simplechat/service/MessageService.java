@@ -7,7 +7,9 @@ import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.model.Message;
 import ru.kolesnikov.simplechat.repository.MessageRepository;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ public class MessageService {
     }
 
     public List<Message> getAllMessages(Instant dateStart, Instant dateEnd) {
-        if(Optional.ofNullable(dateStart).isEmpty() && Optional.ofNullable(dateEnd).isEmpty() ){
+        if (Optional.ofNullable(dateStart).isEmpty() && Optional.ofNullable(dateEnd).isEmpty()) {
             return getAllMessages();
         } else if (Optional.ofNullable(dateStart).isEmpty()) {
             dateStart = LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
@@ -42,9 +44,9 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message) {
-       if (checkGetMessageById(message.getId())) {
-       throw new MessageNotFoundException(message.getId());
-       }
+        if (checkGetMessageById(message.getId())) {
+            throw new MessageNotFoundException(message.getId());
+        }
         return messageRepository.save(message);
     }
 

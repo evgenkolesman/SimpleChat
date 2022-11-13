@@ -6,14 +6,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerMessageTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
-import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTORequest;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTOResponse;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
+import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.MessageRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
@@ -28,9 +31,11 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class MessageGetTests extends TestAbstractIntegration {
 
-
     @Autowired
     private ContainerMessageTestMethods messageContainer;
+
+    @Autowired
+    private ContainerAuthTestMethods authTestMethods;
 
     @Autowired
     private ContainerUserTestMethods userContainer;
@@ -39,11 +44,13 @@ public class MessageGetTests extends TestAbstractIntegration {
     private UserRepository userRepository;
 
     @Autowired
+    private AuthRepository authRepository;
+
+    @Autowired
     private MessageRepository messageRepository;
 
     @LocalServerPort
     private int port;
-    private TestUserDTORegistration userRegistration;
     private UserDTOResponse user;
     private MessageDTORequest messageDTORequest;
 
@@ -54,21 +61,26 @@ public class MessageGetTests extends TestAbstractIntegration {
         var name = "name";
         var login = "login";
         var photoPath = "photoPath";
-        userRegistration = new TestUserDTORegistration(login,
+        String password = "password";
+        TestUserDTORegistration userRegistration = new TestUserDTORegistration(login,
                 name,
                 "surname",
-                "password"
+                password
                 , photoPath
         );
         messageDTORequest = new MessageDTORequest("Message to chat");
 
         user = userContainer.addUser(userRegistration).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
+        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
+                .assertThat()
+                .statusCode(200);
     }
 
     @AfterEach
     void testDataClear() {
         messageRepository.deleteAll();
+        authRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -133,7 +145,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesWithLoginWithBadLogin() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        messageContainer.addMessage(user.getLogin(), messageDTORequest)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -241,7 +253,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithEmptyResult() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        messageContainer.addMessage(user.getLogin(), messageDTORequest)
                 .assertThat()
                 .statusCode(200)
                 .extract()

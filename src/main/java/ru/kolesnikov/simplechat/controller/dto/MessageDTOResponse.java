@@ -1,7 +1,9 @@
 package ru.kolesnikov.simplechat.controller.dto;
 
-import lombok.*;
-import ru.kolesnikov.simplechat.model.Message;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTORequest;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTOResponse;
 import ru.kolesnikov.simplechat.model.Message;
+import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.MessageService;
 import ru.kolesnikov.simplechat.service.UserService;
 
@@ -24,19 +25,20 @@ public class MessageController {
 
     private final MessageService messageService;
     private final UserService userService;
+    private final AuthService authService;
 
-
-    @PostMapping ( "/api/v1/user/{login}/messages")
+    @PostMapping("/api/v1/user/{login}/messages")
     public MessageDTOResponse addMessage(@PathVariable String login,
-                                         @RequestBody MessageDTORequest messageDTORequest)  {
+                                         @RequestBody MessageDTORequest messageDTORequest) {
+        authService.checkNotAuthorized(login);
 
         Message message = messageService.addMessage(
                 new Message(
-                FriendlyId.createFriendlyId(),
-                messageDTORequest.messageBody(),
-                Instant.now().truncatedTo(ChronoUnit.MICROS),
-                userService.findUserByLogin(login)
-        ));
+                        FriendlyId.createFriendlyId(),
+                        messageDTORequest.messageBody(),
+                        Instant.now().truncatedTo(ChronoUnit.MICROS),
+                        userService.findUserByLogin(login)
+                ));
 
         return new MessageDTOResponse(
                 message.getId(),
@@ -48,25 +50,29 @@ public class MessageController {
 
     @GetMapping("/api/v1/user/{login}/messages")
     public List<MessageDTOResponse> getAllMessagesWithLogin(@PathVariable String login) {
+        authService.checkNotAuthorized(login);
+
         return messageService.getAllMessages(login).stream()
                 .map(message ->
-                new MessageDTOResponse(
-                        message.getId(),
-                        message.getUser().getLogin(),
-                        message.getMessageBody(),
-                        message.getDateOfMessage()
-                )).collect(Collectors.toList());
+                        new MessageDTOResponse(
+                                message.getId(),
+                                message.getUser().getLogin(),
+                                message.getMessageBody(),
+                                message.getDateOfMessage()
+                        )).collect(Collectors.toList());
     }
 
     @PutMapping("/api/v1/user/{login}/messages/{id}")
     public MessageDTOResponse updateMessage(@PathVariable String login,
                                             @PathVariable String id,
                                             @RequestBody MessageDTORequest messageDTORequest) {
+        authService.checkNotAuthorized(login);
+
         Message message = messageService.updateMessage(
                 new Message(id,
-                messageDTORequest.messageBody(),
-                Instant.now().truncatedTo(ChronoUnit.MICROS),
-                userService.findUserByLogin(login)));
+                        messageDTORequest.messageBody(),
+                        Instant.now().truncatedTo(ChronoUnit.MICROS),
+                        userService.findUserByLogin(login)));
 
         return new MessageDTOResponse(
                 message.getId(),
@@ -79,6 +85,8 @@ public class MessageController {
     @GetMapping("/api/v1/user/{login}/messages/{id}")
     public MessageDTOResponse getMessageById(@PathVariable String login,
                                              @PathVariable String id) {
+        authService.checkNotAuthorized(login);
+
         Message message = messageService.getMessageById(login, id);
 
         return new MessageDTOResponse(
@@ -89,29 +97,31 @@ public class MessageController {
         );
     }
 
-    @DeleteMapping ("/api/v1/user/{login}/messages/{id}")
+    @DeleteMapping("/api/v1/user/{login}/messages/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMessage(@PathVariable String login,
                               @PathVariable String id) {
+        authService.checkNotAuthorized(login);
+
         messageService.deleteMessage(id);
     }
 
 
     @GetMapping("/api/v1/allmessages")
     public List<MessageDTOResponse> getAllMessages(@RequestParam(name = "dateStart")
-                                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                                @Nullable Instant dateStart,
-                                                            @RequestParam(name = "dateEnd")
-                                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                                @Nullable Instant dateEnd) {
+                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                   @Nullable Instant dateStart,
+                                                   @RequestParam(name = "dateEnd")
+                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                   @Nullable Instant dateEnd) {
         return messageService.getAllMessages(dateStart, dateEnd).stream()
                 .map(message ->
-                new MessageDTOResponse(
-                        message.getId(),
-                        message.getUser().getLogin(),
-                        message.getMessageBody(),
-                        message.getDateOfMessage()
-                )).collect(Collectors.toList());
+                        new MessageDTOResponse(
+                                message.getId(),
+                                message.getUser().getLogin(),
+                                message.getMessageBody(),
+                                message.getDateOfMessage()
+                        )).collect(Collectors.toList());
     }
 
 

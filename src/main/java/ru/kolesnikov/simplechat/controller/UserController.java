@@ -4,13 +4,9 @@ package ru.kolesnikov.simplechat.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 import ru.kolesnikov.simplechat.controller.dto.UserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
-import ru.kolesnikov.simplechat.exceptions.NotAuthorizedException;
-import ru.kolesnikov.simplechat.kafka.KafkaListeners;
 import ru.kolesnikov.simplechat.model.User;
 import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
@@ -18,8 +14,6 @@ import ru.kolesnikov.simplechat.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static ru.kolesnikov.simplechat.kafka.KafkaTopicConfig.KAFKA_TOPIC;
 
 @RestController
 @RequestMapping
@@ -43,7 +37,7 @@ public class UserController {
     }
 
 
-//    Registration
+    //    Registration
     @PostMapping(value = "/api/v1/user")
     public UserDTOResponse addUser(@RequestBody @Valid UserDTORegistration user) {
         userService.addUser(
@@ -61,7 +55,7 @@ public class UserController {
 
     @GetMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse getUserByLogin(@PathVariable String login) {
-        checkNotAuthorized(login);
+        authService.checkNotAuthorized(login);
 
         User user = userService.findUserByLogin(login);
         return new UserDTOResponse(user.getLogin(),
@@ -69,35 +63,28 @@ public class UserController {
                 user.getPhotoPath());
     }
 
-   @PutMapping(value = "/api/v1/user/{login}")
+    @PutMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse updateUser(@PathVariable String login,
-                                      @RequestBody  @Valid UserDTORegistration user) {
-       checkNotAuthorized(login);
+                                      @RequestBody @Valid UserDTORegistration user) {
+        authService.checkNotAuthorized(login);
 
-       userService.updateUser(
+        User userUpdated = userService.updateUser(
                 login,
                 new User(user.getLogin(),
                         user.getName(),
                         user.getSurname(),
                         user.getPhotoPath(),
                         user.getPassword()));
-       return new UserDTOResponse(user.getLogin(),
-               user.getName(),
-               user.getPhotoPath());
+        return new UserDTOResponse(userUpdated.getLogin(),
+                userUpdated.getName(),
+                userUpdated.getPhotoPath());
     }
 
     @DeleteMapping(value = "/api/v1/user/{login}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable String login) {
-        checkNotAuthorized(login);
+        authService.checkNotAuthorized(login);
         userService.deleteUser(login);
     }
-
-    private void checkNotAuthorized(String login) {
-        if(!authService.checkAccess(login)) {
-            throw new NotAuthorizedException();
-        }
-    }
-
 
 }

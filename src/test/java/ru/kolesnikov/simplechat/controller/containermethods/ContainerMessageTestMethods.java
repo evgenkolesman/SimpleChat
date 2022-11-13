@@ -96,7 +96,7 @@ public class ContainerMessageTestMethods {
     }
 
     public ValidatableResponse getAllMessages(String dateStart,
-                                             String dateEnd) {
+                                              String dateEnd) {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.addIfAbsent("dateStart", dateStart);

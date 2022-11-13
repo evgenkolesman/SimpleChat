@@ -1,7 +1,6 @@
 package ru.kolesnikov.simplechat.exceptions;
 
 import com.devskiller.friendly_id.FriendlyId;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.text.MessageFormat;
 import java.util.UUID;

@@ -1,6 +1,5 @@
 package ru.kolesnikov.simplechat.kafka;
 
-import com.fasterxml.jackson.databind.ser.std.BooleanSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +27,12 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, String> producerFactory(){
+    public ProducerFactory<String, String> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
-    return new KafkaTemplate<>(producerFactory);
+        return new KafkaTemplate<>(producerFactory);
     }
 }

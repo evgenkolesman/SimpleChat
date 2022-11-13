@@ -2,9 +2,7 @@ package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOAuth;
-import ru.kolesnikov.simplechat.exceptions.NotAuthorizedException;
 import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.exceptions.UserWasRegisteredException;
 import ru.kolesnikov.simplechat.model.User;
@@ -34,13 +32,6 @@ public class UserService {
                 .isPresent();
     }
 
-    public User getUser(User user) {
-        String login = user.getLogin();
-        return userRepository
-                .findById(login)
-                .orElseThrow(() -> new UserNotFoundException(login));
-    }
-
     public User addUser(User user) {
         if (findUserByLoginPresent(user.getLogin())) {
             throw new UserWasRegisteredException(user.getLogin());
@@ -53,18 +44,18 @@ public class UserService {
         if (!findUserByLoginPresent(login)) {
             throw new UserNotFoundException(user.getLogin());
         }
-         if (findUserByLoginPresent(user.getLogin())
-         && findUserByLogin(login)
-                 .equals(findUserByLogin(user.getLogin()))) {
+        if (findUserByLoginPresent(user.getLogin())
+                && findUserByLogin(login)
+                .equals(findUserByLogin(user.getLogin()))) {
             throw new UserWasRegisteredException(user.getLogin());
         }
 
         return userRepository.save(user);
     }
 
-       public void deleteUser(String login) {
-           userRepository.delete(findUserByLogin(login));
-       }
+    public void deleteUser(String login) {
+        userRepository.delete(findUserByLogin(login));
+    }
 
     public boolean checkAuthorization(UserDTOAuth user) {
         return userRepository

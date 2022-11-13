@@ -45,7 +45,7 @@ public class ContainerAuthTestMethods {
 
     }
 
-     public ValidatableResponse getAllActiveUsers(String login) {
+    public ValidatableResponse getAllActiveUsers(String login) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

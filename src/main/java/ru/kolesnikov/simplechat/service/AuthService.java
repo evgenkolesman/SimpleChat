@@ -2,12 +2,12 @@ package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.kolesnikov.simplechat.exceptions.NotAuthorizedException;
 import ru.kolesnikov.simplechat.model.AccessModel;
 import ru.kolesnikov.simplechat.repository.AuthRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +33,11 @@ public class AuthService {
                 .stream().map(accessModel -> accessModel.getLogin().getLogin())
                 .collect(Collectors.toList());
 
+    }
+
+    public void checkNotAuthorized(String login) {
+        if (!checkAccess(login)) {
+            throw new NotAuthorizedException();
+        }
     }
 }

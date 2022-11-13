@@ -11,7 +11,6 @@ import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 import static ru.kolesnikov.simplechat.kafka.KafkaTopicConfig.KAFKA_TOPIC;
@@ -30,7 +29,7 @@ public class AuthUserController {
 
         boolean checkAuthorization = userService.checkAuthorization(user);
 
-        if(checkAuthorization){
+        if (checkAuthorization) {
             authService.authorize(user.getLogin());
             kafkaTemplate.send(KAFKA_TOPIC,
                     "AUTHORIZATION_TOKEN");
@@ -44,20 +43,21 @@ public class AuthUserController {
     @DeleteMapping(value = "/api/v1/user/{login}/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@PathVariable String login) {
-        if(!authService.checkAccess(login)) {
+        if (!authService.checkAccess(login)) {
             throw new NotAuthorizedException();
-        };
+        }
+        ;
         authService.logout(login);
     }
 
     @GetMapping(value = "/api/v1/user/{login}/activeUsers")
     public List<String> getAllActiveUsers(@PathVariable String login) {
-        if(!authService.checkAccess(login)) {
+        if (!authService.checkAccess(login)) {
             throw new NotAuthorizedException();
-        };
+        }
+        ;
         return authService.getAllActiveLogins();
     }
-
 
 
 }

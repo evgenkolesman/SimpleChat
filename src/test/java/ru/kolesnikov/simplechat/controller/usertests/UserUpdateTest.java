@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
-import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
@@ -114,7 +114,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 .extract().as(ErrorModel.class);
         assertThat("Wrong error message", errorModel.getMessage(),
                 containsString(String.format("Problems with user login: %s not found", anyLogin)));
-   }
+    }
 
     @Test
     void updateUserBadLoginBothTest() {
@@ -141,7 +141,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 .extract().as(ErrorModel.class);
         assertThat("Wrong error message", errorModel.getMessage(),
                 containsString("Problems with user login: login1 not found"));
-   }
+    }
 
 
     @Test
@@ -158,7 +158,6 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
-
 
 
         user = containerUserTestMethods.addUser(userRegistrationUpdate)
