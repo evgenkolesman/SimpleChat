@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "messages")
+@Table(name = "messages",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,10 +18,10 @@ public class Message {
     @Column(name = "id", nullable = false)
     private String id;
 
-    @Column(name = "messageBody", nullable = false)
+    @Column(name = "message_body", nullable = false)
     private String messageBody;
 
-    @Column(name = "dateOfMessage", nullable = false)
+    @Column(name = "date_of_message", nullable = false)
     private Instant dateOfMessage;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

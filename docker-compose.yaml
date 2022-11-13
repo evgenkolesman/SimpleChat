@@ -1,33 +1,42 @@
 version: "3.5"
 services:
   simplechat:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: euhenios/simplechat:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     container_name: simplechat
     depends_on:
       - postgres
       - broker
     ports:
       - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://chatdb:5432/chatdb"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "broker:29092"
+
     #    restart: always
+#    networks:
+#      - broker
   postgres:
     image: postgres:14.3-alpine
-    container_name: postgresdb
+    container_name: chatdb
     ports:
-      - "5431:5432"
+      - "5432:5432"
     environment:
       POSTGRES_DB: "chatdb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "Password"
       PG_DATA: ./snap/postgres/data/pgdata
+
   zookeeper:
     image: confluentinc/cp-zookeeper:6.2.0
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-
+#    networks:
+#      - broker
   broker:
     image: confluentinc/cp-kafka:7.0.0
     container_name: broker
@@ -43,3 +52,9 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+#    networks:
+#      - broker
+
+#networks:
+#  broker:

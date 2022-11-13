@@ -137,6 +137,33 @@ public class UserUpdateTest extends TestAbstractIntegration {
    }
 
 
+    @Test
+    void updateUserBadLoginWasRegisteredTest() {
+        var name = "name";
+        var login = "login1";
+        var surname = "surname1";
+        var photoPath = "photoPath1";
+        var password = "password1";
+        TestUserDTORegistration userRegistrationUpdate = new TestUserDTORegistration(
+                login,
+                name,
+                surname,
+                password,
+                photoPath
+        );
+
+        user = containerUserTestMethods.addUser(userRegistrationUpdate)
+                .assertThat().statusCode(200)
+                .extract().as(UserDTOResponse.class);
+
+        var errorModel = containerUserTestMethods.updateUser(
+                        login,
+                        userRegistrationUpdate).assertThat()
+                .statusCode(400)
+                .extract().as(ErrorModel.class);
+        assertThat("Wrong error message", errorModel.getMessage(),
+                containsString(login + " was already registered"));
+    }
 
 
 }

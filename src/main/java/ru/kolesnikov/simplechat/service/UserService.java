@@ -54,7 +54,7 @@ public class UserService {
          if (findUserByLoginPresent(user.getLogin())
          && findUserByLogin(login)
                  .equals(findUserByLogin(user.getLogin()))) {
-            throw new UserNotFoundException(user.getLogin());
+            throw new UserWasRegisteredException(user.getLogin());
         }
 
         return userRepository.save(user);
