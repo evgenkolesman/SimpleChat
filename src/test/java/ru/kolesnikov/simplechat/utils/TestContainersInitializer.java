@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 public class TestContainersInitializer {
 
     public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:14.3-alpine");
-    public static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"));
+    public static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.0"));
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

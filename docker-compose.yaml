@@ -5,7 +5,7 @@ services:
 #    build:
 #      context: .
 #      dockerfile: Dockerfile
-    container_name: simplechat
+#    container_name: euhenios/simplechat
     depends_on:
       - postgres
       - broker
