@@ -41,9 +41,7 @@ public class UserService {
 
 
     public User updateUser(String login, User user) {
-        if (!findUserByLoginPresent(login)) {
-            throw new UserNotFoundException(user.getLogin());
-        }
+
         if (findUserByLoginPresent(user.getLogin())
                 && findUserByLogin(login)
                 .equals(findUserByLogin(user.getLogin()))) {

@@ -24,7 +24,7 @@ public class Message {
     @Column(name = "date_of_message", nullable = false)
     private Instant dateOfMessage;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinColumn(name = "foreign_key_login")
     private User user;
 

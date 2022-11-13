@@ -13,6 +13,7 @@ import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
+import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import java.util.List;
@@ -33,6 +34,9 @@ public class AuthorizationTests extends TestAbstractIntegration {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthRepository authRepository;
 
     @LocalServerPort
     private int port;
@@ -61,6 +65,7 @@ public class AuthorizationTests extends TestAbstractIntegration {
     @AfterEach
     void testDataClear() {
         userRepository.deleteAll();
+        authRepository.deleteAll();
     }
 
     @Test
@@ -162,7 +167,7 @@ public class AuthorizationTests extends TestAbstractIntegration {
                         userRegistration.getPassword()))
                 .assertThat()
                 .statusCode(200);
-        containerAuthTestMethods.logout(user.getLogin())
+        containerAuthTestMethods.logout(userRegistration.getLogin())
                 .assertThat()
                 .statusCode(204);
     }
@@ -188,7 +193,7 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 .body()
                 .jsonPath()
                 .getList("", String.class);
-        assertThat("LIst of active users is wrong",
+        assertThat("List of active users is wrong",
                 list, equalTo(List.of(user.getLogin())));
     }
 

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class MessageGetTests extends TestAbstractIntegration {
@@ -79,8 +78,8 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @AfterEach
     void testDataClear() {
-        messageRepository.deleteAll();
         authRepository.deleteAll();
+        messageRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -115,12 +114,12 @@ public class MessageGetTests extends TestAbstractIntegration {
         String badLogin = "dfsd";
         var errorModel = messageContainer.getMessageById(badLogin, message.getId())
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Wrong error message",
-                errorModel.getMessage(), containsString(badLogin + " not found"));
+                errorModel.getMessage(), equalTo("You should be logged"));
 
     }
 
@@ -154,12 +153,12 @@ public class MessageGetTests extends TestAbstractIntegration {
         String badLogin = "dfsd";
         var errorModel = messageContainer.getAllMessagesWithLogin(badLogin)
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Wrong error message",
-                errorModel.getMessage(), containsString(badLogin + " not found"));
+                errorModel.getMessage(), equalTo("You should be logged"));
 
     }
 

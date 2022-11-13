@@ -1,6 +1,8 @@
 package ru.kolesnikov.simplechat.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.kolesnikov.simplechat.model.Message;
 import ru.kolesnikov.simplechat.model.User;
@@ -17,5 +19,9 @@ public interface MessageRepository extends JpaRepository<Message, String> {
     List<Message> findAllByDateOfMessageAfterAndDateOfMessageBefore(Instant startDate, Instant EndDate);
 
     Optional<Message> findMessageById(String id);
+
+    @Modifying
+    @Query(value = "delete from messages", nativeQuery = true)
+    void deleteAll();
 
 }

@@ -110,10 +110,10 @@ public class UserUpdateTest extends TestAbstractIntegration {
         var errorModel = containerUserTestMethods.updateUser(
                         anyLogin,
                         userRegistrationUpdate).assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract().as(ErrorModel.class);
-        assertThat("Wrong error message", errorModel.getMessage(),
-                containsString(String.format("Problems with user login: %s not found", anyLogin)));
+        assertThat("Bad data returned", errorModel.getMessage(),
+                equalTo("You should be logged"));
     }
 
     @Test
@@ -137,10 +137,10 @@ public class UserUpdateTest extends TestAbstractIntegration {
         var errorModel = containerUserTestMethods.updateUser(
                         "login1",
                         userRegistrationUpdate).assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract().as(ErrorModel.class);
-        assertThat("Wrong error message", errorModel.getMessage(),
-                containsString("Problems with user login: login1 not found"));
+        assertThat("Bad data returned", errorModel.getMessage(),
+                equalTo("You should be logged"));
     }
 
 

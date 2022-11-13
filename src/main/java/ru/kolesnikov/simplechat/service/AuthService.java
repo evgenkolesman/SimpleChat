@@ -17,20 +17,20 @@ public class AuthService {
     private final UserService userService;
 
     public void authorize(String login) {
-        authRepository.save(new AccessModel(userService.findUserByLogin(login)));
+        authRepository.save(new AccessModel(login));
     }
 
     public void logout(String login) {
-        authRepository.delete(authRepository.findByLogin(userService.findUserByLogin(login)));
+        authRepository.deleteByLogin(login);
     }
 
     public boolean checkAccess(String login) {
-        return authRepository.existsAccessModelByLogin(userService.findUserByLogin(login));
+        return authRepository.existsAccessModelByLogin(login);
     }
 
     public List<String> getAllActiveLogins() {
         return authRepository.findAll()
-                .stream().map(accessModel -> accessModel.getLogin().getLogin())
+                .stream().map(AccessModel::getLogin)
                 .collect(Collectors.toList());
 
     }

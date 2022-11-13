@@ -77,8 +77,8 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
 
     @AfterEach
     void testDataClear() {
-        messageRepository.deleteAll();
         authRepository.deleteAll();
+        messageRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -113,12 +113,12 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
     void addMessageBadLoginTest() {
         var errorModel = messageContainer.addMessage(user.getName(), messageDTORequest)
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
-        assertThat("Wrong error message", errorModel.getMessage(),
-                containsString(String.format("Problems with user login: %s not found", user.getName())));
+        assertThat("Bad data returned", errorModel.getMessage(),
+                equalTo("You should be logged"));
 
 
     }
@@ -170,13 +170,12 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
                         badId,
                         new MessageDTORequest(new_body))
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
-        assertThat("Message not correctly updated",
-                errorModel.getMessage(),
-                containsString(String.format("Problems with user login: %s not found", badLogin)));
+        assertThat("Bad data returned", errorModel.getMessage(),
+                equalTo("You should be logged"));
     }
 
     @Test

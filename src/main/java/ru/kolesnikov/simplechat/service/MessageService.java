@@ -3,7 +3,6 @@ package ru.kolesnikov.simplechat.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kolesnikov.simplechat.exceptions.MessageNotFoundException;
-import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.model.Message;
 import ru.kolesnikov.simplechat.repository.MessageRepository;
 
@@ -51,9 +50,7 @@ public class MessageService {
     }
 
     public Message getMessageById(String login, String id) {
-        if (!userService.findUserByLoginPresent(login)) {
-            throw new UserNotFoundException(login);
-        }
+
         return messageRepository
                 .findMessageById(id)
                 .orElseThrow(() -> new MessageNotFoundException(id));

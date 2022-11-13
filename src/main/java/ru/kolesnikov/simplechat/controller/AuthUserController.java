@@ -43,10 +43,10 @@ public class AuthUserController {
     @DeleteMapping(value = "/api/v1/user/{login}/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@PathVariable String login) {
-        if (!authService.checkAccess(login)) {
+        if (authService.checkAccess(login) == false) {
             throw new NotAuthorizedException();
         }
-        ;
+
         authService.logout(login);
     }
 
@@ -55,7 +55,6 @@ public class AuthUserController {
         if (!authService.checkAccess(login)) {
             throw new NotAuthorizedException();
         }
-        ;
         return authService.getAllActiveLogins();
     }
 

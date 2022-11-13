@@ -2,13 +2,11 @@ package ru.kolesnikov.simplechat.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "access_users")
+@Table(name = "access")
 @NoArgsConstructor
 @Getter
 public class AccessModel {
@@ -17,12 +15,10 @@ public class AccessModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "foreign_key_login")
-    private User login;
+    @Column(name = "login")
+    private String login;
 
-    public AccessModel(User login) {
+    public AccessModel(String login) {
         this.login = login;
     }
 

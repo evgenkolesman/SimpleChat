@@ -19,7 +19,6 @@ import ru.kolesnikov.simplechat.repository.UserRepository;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UserGetAndDeleteTest extends TestAbstractIntegration {
@@ -63,8 +62,8 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @AfterEach
     void testDataClear() {
-        authRepository.deleteAll();
         userRepository.deleteAll();
+        authRepository.deleteAll();
     }
 
     @Test
@@ -100,12 +99,12 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
     void getUserByWrongLogin() {
         var errorModel = containerUserTestMethods.getUserByLogin(user.getName())
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Bad data returned", errorModel.getMessage(),
-                containsString(String.format("Problems with user login: %s not found", user.getName())));
+                equalTo("You should be logged"));
     }
 
     @Test
@@ -122,13 +121,13 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
     void deleteUserByBadLogin() {
         var errorModel = containerUserTestMethods.deleteUser(user.getName())
                 .assertThat()
-                .statusCode(404)
+                .statusCode(400)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
 
         assertThat("Bad data returned", errorModel.getMessage(),
-                containsString(String.format("Problems with user login: %s not found", user.getName())));
+                equalTo("You should be logged"));
 
     }
 
