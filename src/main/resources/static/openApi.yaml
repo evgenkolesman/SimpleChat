@@ -48,39 +48,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-    get:
-      tags:
-        - "User"
-      summary: "Get List of all users"
-      description: "Returns list of users"
-      operationId: "getAllUsers"
-      responses:
-        "200":
-          description: "Successful operation"
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserDTOResponse"
-        "400":
-          description: "Bad request"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorModel"
 
   /api/v1/user/{login}:
     get:
       tags:
         - "User"
-      summary: "Find person by ID"
-      description: "Returns a single person with current ID"
+      summary: "Get user by login"
+      description: "Returns current user"
       operationId: "getUserByLogin"
       parameters:
         - name: "login"
           in: "path"
-          description: "Login"
+          description: "List of all registered users you should be authorized"
           required: true
           schema:
             type: "string"
@@ -91,12 +70,14 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/UserDTOResponse"
-        "404":
-          description: "User not found"
+        "400":
+          description: "Bad request"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
+
+
     put:
       tags:
         - "User"
@@ -156,6 +137,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
+  /api/v1/user/{login}/allusers:
+    get:
+      tags:
+        - "User"
+      summary: "Get list of users"
+      description: "Returns list of all users"
+      operationId: "getAllUsers"
+      parameters:
+        - name: "login"
+          in: "path"
+          description: "List of all registered users you should be authorized"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDTOResponse"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
 
   /api/v1/auth:
     post:
@@ -182,7 +193,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-  #       maybe need to add bad credentials exception and status
+  /api/v1/{login}/logout:
+    delete:
+      tags:
+        - "Authorization"
+      summary: "Check Authorization"
+      description: "Check user is present and correction of password"
+      operationId: "logout"
+      parameters:
+        - name: "login"
+          in: path
+          description: "Login to logout"
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Successful operation"
+        "400":
+          description: "Validation person data problem"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+
+  /api/v1/{login}/activeUsers:
+    get:
+      tags:
+        - "Authorization"
+      summary: "Get List of all active users"
+      description: "Returns list of user`s logins"
+      operationId: "getAllActiveUsers"
+      parameters:
+        - name: "login"
+          in: "path"
+          description: "List of all registered users you should be authorized"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "List of logins"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  #maybe better to replace to user
 
 
   /api/v1/user/{login}/messages:
@@ -367,7 +432,7 @@ paths:
       tags:
         - "Message"
       summary: "Returns all messages"
-      description: "Returns all messages from Database"
+      description: "Returns all messages from Database as it is common chat you can see all the messages like in forums"
       operationId: "getAllMessages"
       parameters:
         - name: "dateStart"
@@ -516,7 +581,7 @@ components:
           example: "2132sada343"
         message:
           type: string
-          example: "This Person not found"
+          example: "Error message"
         status:
           type: string
           example: "Not found"

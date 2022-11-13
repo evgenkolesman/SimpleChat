@@ -25,9 +25,11 @@ public class MessageController {
     private final MessageService messageService;
     private final UserService userService;
 
+
     @PostMapping ( "/api/v1/user/{login}/messages")
     public MessageDTOResponse addMessage(@PathVariable String login,
                                          @RequestBody MessageDTORequest messageDTORequest)  {
+
         Message message = messageService.addMessage(
                 new Message(
                 FriendlyId.createFriendlyId(),
@@ -89,7 +91,8 @@ public class MessageController {
 
     @DeleteMapping ("/api/v1/user/{login}/messages/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMessage(@PathVariable String id) {
+    public void deleteMessage(@PathVariable String login,
+                              @PathVariable String id) {
         messageService.deleteMessage(id);
     }
 

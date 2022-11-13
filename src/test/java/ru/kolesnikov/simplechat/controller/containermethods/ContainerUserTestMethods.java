@@ -29,13 +29,13 @@ public class ContainerUserTestMethods {
 
     }
 
-    public ValidatableResponse getAllUsers() {
+    public ValidatableResponse getAllUsers(String login) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
-                        .replacePath(USERS_ENDPOINT)
+                        .replacePath(String.format(USERS_ENDPOINT_WITH_LOGIN, login) + "/allusers")
                         .toUriString())
                 .then()
                 .and().log()

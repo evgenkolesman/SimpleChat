@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.kolesnikov.simplechat.exceptions.BadLoginMessageException;
-import ru.kolesnikov.simplechat.exceptions.MessageNotFoundException;
-import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
-import ru.kolesnikov.simplechat.exceptions.UserWasRegisteredException;
+import ru.kolesnikov.simplechat.exceptions.*;
 import ru.kolesnikov.simplechat.model.ErrorModel;
 
 import java.util.Optional;
@@ -65,6 +62,17 @@ public class RestResponseEntityExceptionHandler {
         log.info(String.format("%s %s", errorId, exception.getMessage()));
         return new ResponseEntity<>(new ErrorModel(errorId,
                 Optional.ofNullable(exception.getFieldError()).orElseThrow().getDefaultMessage(),
+                HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
+    }
+
+ @ExceptionHandler
+    protected ResponseEntity<ErrorModel> handleException(NotAuthorizedException exception) {
+        var errorId = FriendlyId.createFriendlyId();
+        var errorMessage = "You should be logged to logout";
+        log.info(String.format("%s %s", errorId, exception.getMessage()));
+        return new ResponseEntity<>(new ErrorModel(errorId,
+                errorMessage,
                 HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
     }

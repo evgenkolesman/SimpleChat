@@ -24,5 +24,6 @@ public class User {
     @Column(name = "photo_path")
     private String photoPath;
     @Column(name = "password")
-    private String password; //maybe redundant
+    private String password;
+
 }

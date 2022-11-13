@@ -6,11 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
 import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
+import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import java.util.List;
@@ -23,14 +26,22 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Autowired
     private ContainerUserTestMethods containerUserTestMethods;
+
+    @Autowired
+    private ContainerAuthTestMethods authTestMethods;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthRepository authRepository;
 
     @LocalServerPort
     private int port;
 
     private UserDTOResponse user;
     private TestUserDTORegistration userRegistration;
+    private String password = "password";
 
     @BeforeEach
     void testDataProduce() {
@@ -42,7 +53,7 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
         userRegistration = new TestUserDTORegistration(login,
                 name,
                 "surname",
-                "password"
+                password
                 , photoPath
         );
 
@@ -52,12 +63,16 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @AfterEach
     void testDataClear() {
+        authRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
     void getAllUsers() {
-        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers()
+        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
+                .assertThat()
+                .statusCode(200);
+        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers(user.getLogin())
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -68,6 +83,10 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getUserByLogin() {
+        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
+                .assertThat()
+                .statusCode(200);
+
         UserDTOResponse userResponse = containerUserTestMethods.getUserByLogin(user.getLogin())
                 .assertThat()
                 .statusCode(200)
@@ -91,6 +110,9 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void deleteUserByLogin() {
+        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
+                .assertThat()
+                .statusCode(200);
         containerUserTestMethods.deleteUser(user.getLogin())
                 .assertThat()
                 .statusCode(204);

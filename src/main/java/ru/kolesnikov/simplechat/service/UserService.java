@@ -2,7 +2,9 @@ package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOAuth;
+import ru.kolesnikov.simplechat.exceptions.NotAuthorizedException;
 import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.exceptions.UserWasRegisteredException;
 import ru.kolesnikov.simplechat.model.User;
@@ -71,4 +73,6 @@ public class UserService {
                         user.getPassword())
                 .isPresent();
     }
+
+
 }

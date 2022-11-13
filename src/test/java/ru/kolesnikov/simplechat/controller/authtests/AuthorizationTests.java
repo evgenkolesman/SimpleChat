@@ -15,6 +15,8 @@ import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -151,5 +153,49 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 .as(ErrorModel.class);
         assertThat("Bad return value", errorModel.getMessage(),
                 equalTo("Invalid data: login must be minimum 2 characters long"));
+    }
+
+    @Test
+    void checkLogout() {
+        containerAuthTestMethods
+                .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()))
+                .assertThat()
+                .statusCode(200);
+        containerAuthTestMethods.logout(user.getLogin())
+                .assertThat()
+                .statusCode(204);
+    }
+
+    @Test
+    void checkLogoutWithOutLogin() {
+        containerAuthTestMethods.logout(user.getLogin())
+                .assertThat()
+                .statusCode(400);
+    }
+
+    @Test
+    void checkGetAllActiveUsers() {
+        containerAuthTestMethods
+                .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()))
+                .assertThat()
+                .statusCode(200);
+        var list = containerAuthTestMethods.getAllActiveUsers(user.getLogin())
+                .assertThat()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList("", String.class);
+        assertThat("LIst of active users is wrong",
+                list, equalTo(List.of(user.getLogin())));
+    }
+
+    @Test
+    void checkGetAllActiveWithoutAuthUsers() {
+        containerAuthTestMethods.getAllActiveUsers(user.getLogin())
+                .assertThat()
+                .statusCode(400);
     }
 }

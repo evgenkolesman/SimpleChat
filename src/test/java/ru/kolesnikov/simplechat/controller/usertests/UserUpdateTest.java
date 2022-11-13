@@ -6,11 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
 import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
+import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.ErrorModel;
+import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,26 +22,21 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class UserUpdateTest extends TestAbstractIntegration {
 
-    private static final String LOGIN_EMPTY_MESSAGE = "Invalid data: login must be minimum 2 characters long";
-    private static final String NAME_EMPTY_MESSAGE = "Invalid data: name must be minimum 2 characters long";
-    private static final String SURNAME_EMPTY_MESSAGE = "Invalid data: surname must be minimum 2 characters long";
-    private static final String PASSWORD_EMPTY_MESSAGE = "Invalid data: password must be minimum 8 characters long";
-
-    private static final String PASSWORD_NULL_MESSAGE = "Invalid data: password field should be filled";
-    private static final String NAME_NULL_MESSAGE = "Invalid data: name field should be filled";
-    private static final String SURNAME_NULL_MESSAGE = "Invalid data: surname field should be filled";
-    private static final String LOGIN_NULL_MESSAGE = "Invalid data: login field should be filled";
-
     @Autowired
     private ContainerUserTestMethods containerUserTestMethods;
     @Autowired
+    private ContainerAuthTestMethods containerAuthTestMethods;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AuthRepository authRepository;
 
     @LocalServerPort
     private int port;
 
     private UserDTOResponse user;
     private TestUserDTORegistration userRegistration;
+    private String password = "password";
 
     @BeforeEach
     void testDataProduce() {
@@ -50,7 +48,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
         userRegistration = new TestUserDTORegistration(login,
                 name,
                 "surname",
-                "password"
+                password
                 , photoPath
         );
 
@@ -60,6 +58,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
 
     @AfterEach
     void testDataClear() {
+        authRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -77,6 +76,10 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
+        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(),
+                        this.password))
+                .assertThat()
+                .statusCode(200);
 
         UserDTOResponse user = containerUserTestMethods.updateUser(
                         userRegistration.getLogin(),
@@ -103,13 +106,14 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 photoPath
         );
 
+        String anyLogin = "anyLogin";
         var errorModel = containerUserTestMethods.updateUser(
-                        "anyLogin",
+                        anyLogin,
                         userRegistrationUpdate).assertThat()
                 .statusCode(404)
                 .extract().as(ErrorModel.class);
         assertThat("Wrong error message", errorModel.getMessage(),
-                containsString("Problems with user login: login1 not found"));
+                containsString(String.format("Problems with user login: %s not found", anyLogin)));
    }
 
     @Test
@@ -126,6 +130,9 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
+        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), this.password))
+                .assertThat()
+                .statusCode(200);
 
         var errorModel = containerUserTestMethods.updateUser(
                         "login1",
@@ -152,9 +159,16 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 photoPath
         );
 
+
+
         user = containerUserTestMethods.addUser(userRegistrationUpdate)
                 .assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
+
+        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(userRegistrationUpdate.getLogin(),
+                        userRegistrationUpdate.getPassword()))
+                .assertThat()
+                .statusCode(200);
 
         var errorModel = containerUserTestMethods.updateUser(
                         login,
