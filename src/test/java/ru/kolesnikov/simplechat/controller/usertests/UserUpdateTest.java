@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
@@ -30,6 +32,9 @@ public class UserUpdateTest extends TestAbstractIntegration {
     private UserRepository userRepository;
     @Autowired
     private AuthRepository authRepository;
+
+    @Autowired
+    private Environment environment;
 
     @LocalServerPort
     private int port;
@@ -76,14 +81,13 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
-        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(),
-                        this.password))
-                .assertThat()
-                .statusCode(200);
+        String token = containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(),
+                this.password));
 
         UserDTOResponse user = containerUserTestMethods.updateUser(
-                        userRegistration.getLogin(),
-                        userRegistrationUpdate).assertThat().statusCode(200)
+                        this.user.getLogin(),
+                        userRegistrationUpdate,
+                        token).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
         assertThat("User name should be equals", user.getName(), equalTo(name));
         assertThat("User photoPath should be equals", user.getPhotoPath(), equalTo(photoPath));
@@ -109,11 +113,11 @@ public class UserUpdateTest extends TestAbstractIntegration {
         String anyLogin = "anyLogin";
         var errorModel = containerUserTestMethods.updateUser(
                         anyLogin,
-                        userRegistrationUpdate).assertThat()
-                .statusCode(400)
+                        userRegistrationUpdate, anyLogin).assertThat()
+                .statusCode(403)
                 .extract().as(ErrorModel.class);
         assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+                equalTo("Wrong token"));
     }
 
     @Test
@@ -130,17 +134,17 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
-        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), this.password))
-                .assertThat()
-                .statusCode(200);
+        String token =
+                containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), this.password));
 
         var errorModel = containerUserTestMethods.updateUser(
-                        "login1",
-                        userRegistrationUpdate).assertThat()
-                .statusCode(400)
+                        "login10",
+                        userRegistrationUpdate,
+                        token).assertThat()
+                .statusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value())
                 .extract().as(ErrorModel.class);
         assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+                equalTo(environment.getProperty("exceptions.notEnoughPermissions")));
     }
 
 
@@ -164,14 +168,13 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 .assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
 
-        containerAuthTestMethods.checkUserAuthorization(new TestUserDTOAuth(userRegistrationUpdate.getLogin(),
-                        userRegistrationUpdate.getPassword()))
-                .assertThat()
-                .statusCode(200);
+        String token = containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(userRegistrationUpdate.getLogin(),
+                userRegistrationUpdate.getPassword()));
 
         var errorModel = containerUserTestMethods.updateUser(
                         login,
-                        userRegistrationUpdate).assertThat()
+                        userRegistrationUpdate,
+                        token).assertThat()
                 .statusCode(400)
                 .extract().as(ErrorModel.class);
         assertThat("Wrong error message", errorModel.getMessage(),

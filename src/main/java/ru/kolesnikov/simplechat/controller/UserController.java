@@ -55,7 +55,7 @@ public class UserController {
 
     @GetMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse getUserByLogin(@PathVariable String login) {
-        authService.checkNotAuthorized(login);
+//        authService.checkNotAuthorized(login);
 
         User user = userService.findUserByLogin(login);
         return new UserDTOResponse(user.getLogin(),

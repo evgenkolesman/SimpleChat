@@ -7,6 +7,7 @@ import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegis
 import ru.kolesnikov.simplechat.utils.UriComponentsBuilderUtil;
 
 import static io.restassured.RestAssured.given;
+import static ru.kolesnikov.simplechat.security.AuthorizationFilter.AUTHORIZATION;
 
 @Component
 public class ContainerUserTestMethods {
@@ -29,9 +30,10 @@ public class ContainerUserTestMethods {
 
     }
 
-    public ValidatableResponse getAllUsers(String login) {
+    public ValidatableResponse getAllUsers(String login, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + token)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
@@ -43,9 +45,11 @@ public class ContainerUserTestMethods {
 
     }
 
-    public ValidatableResponse getUserByLogin(String login) {
+    public ValidatableResponse getUserByLogin(String login, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
+                .header("Login", login)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
@@ -57,9 +61,10 @@ public class ContainerUserTestMethods {
 
     }
 
-    public ValidatableResponse updateUser(String login, TestUserDTORegistration model) {
+    public ValidatableResponse updateUser(String login, TestUserDTORegistration model, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .body(model)
                 .when()
                 .put(UriComponentsBuilderUtil
@@ -72,9 +77,10 @@ public class ContainerUserTestMethods {
 
     }
 
-    public ValidatableResponse deleteUser(String login) {
+    public ValidatableResponse deleteUser(String login, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .delete(UriComponentsBuilderUtil
                         .builder()

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerMessageTestMethods;
@@ -21,7 +23,6 @@ import ru.kolesnikov.simplechat.repository.MessageRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
@@ -36,6 +37,9 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
     private ContainerUserTestMethods userContainer;
 
     @Autowired
+    private ContainerAuthTestMethods containerAuthTestMethods;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -44,11 +48,16 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
     @Autowired
     private AuthRepository authRepository;
 
+    @Autowired
+    private Environment environment;
+
     @LocalServerPort
     private int port;
     private TestUserDTORegistration userRegistration;
     private UserDTOResponse user;
     private MessageDTORequest messageDTORequest;
+    private String token;
+
 
     @BeforeEach
     void testDataProduce() {
@@ -69,9 +78,7 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
 
         user = userContainer.addUser(userRegistration).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
-        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
-                .assertThat()
-                .statusCode(200);
+        token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
 
     }
 
@@ -84,24 +91,29 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
 
     @Test
     void addMessageCorrectTest() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        String token =
+                containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(),
+                        userRegistration.getPassword()));
+        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest, token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
-        assertThat("Wrong message was returned", message.getMessageBody(), equalTo(messageDTORequest.messageBody()));
+        assertThat("Wrong message was returned",
+                message.getMessageBody(),
+                equalTo(messageDTORequest.messageBody()));
     }
 
     @Test
     void addMessageDoubleCorrectTest() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest, token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
-        messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        messageContainer.addMessage(user.getLogin(), messageDTORequest, token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -111,21 +123,22 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
 
     @Test
     void addMessageBadLoginTest() {
-        var errorModel = messageContainer.addMessage(user.getName(), messageDTORequest)
+        var errorModel = messageContainer.addMessage(user.getName(), messageDTORequest, token)
                 .assertThat()
-                .statusCode(400)
+                .statusCode(451)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
-        assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+        assertThat("Bad data returned",
+                errorModel.getMessage(),
+                equalTo(environment.getProperty("exceptions.notEnoughPermissions")));
 
 
     }
 
     @Test
     void updateMessageCorrectTest() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest, token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -134,14 +147,16 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
         String new_body = "New Body";
         MessageDTOResponse messageUpdate = messageContainer.updateMessage(message.getLogin(),
                         message.getId(),
-                        new MessageDTORequest(new_body))
+                        new MessageDTORequest(new_body),
+                        token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
         assertThat("Message not correctly updated",
-                messageUpdate.getMessageBody(), equalTo(new_body));
+                messageUpdate.getMessageBody(),
+                equalTo(new_body));
     }
 
     @Test
@@ -150,15 +165,16 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
         String badId = "sdasd";
         var errorModel = messageContainer.updateMessage("login",
                         badId,
-                        new MessageDTORequest(new_body))
+                        new MessageDTORequest(new_body),
+                        token)
                 .assertThat()
                 .statusCode(404)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Message not correctly updated",
-                errorModel.getMessage(),
-                containsString(String.format("Problems with message ID: %s not found", badId)));
+                errorModel.getMessage().split(" ", 2)[1],
+                equalTo(String.format("Problems with message ID: %s not found", badId)));
     }
 
     @Test
@@ -168,26 +184,28 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
         String badLogin = "login2";
         var errorModel = messageContainer.updateMessage(badLogin,
                         badId,
-                        new MessageDTORequest(new_body))
+                        new MessageDTORequest(new_body),
+                        token)
                 .assertThat()
-                .statusCode(400)
+                .statusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value())
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+                equalTo(environment.getProperty("exceptions.notEnoughPermissions")));
     }
 
     @Test
     void deleteMessageCorrectTest() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest)
+        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(), messageDTORequest, token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
         messageContainer.deleteMessage(message.getLogin(),
-                        message.getId())
+                        message.getId(),
+                        token)
                 .assertThat()
                 .statusCode(204);
     }
@@ -196,15 +214,16 @@ public class MessageAddUpdateDeleteTests extends TestAbstractIntegration {
     void deleteMessageNotCorrectTest() {
         String badLogin = "idsdasd";
         var errorModel = messageContainer.deleteMessage("login",
-                        badLogin)
+                        badLogin,
+                        token)
                 .assertThat()
                 .statusCode(404)
                 .extract()
                 .body()
                 .as(ErrorModel.class);
         assertThat("Message not correctly updated",
-                errorModel.getMessage(),
-                containsString(String.format("Problems with message ID: %s not found", badLogin)));
+                errorModel.getMessage().split(" ", 2)[1],
+                equalTo(String.format("Problems with message ID: %s not found", badLogin)));
     }
 
 }

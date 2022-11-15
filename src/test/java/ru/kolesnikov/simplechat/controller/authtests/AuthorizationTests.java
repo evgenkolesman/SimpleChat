@@ -12,15 +12,13 @@ import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMet
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
-import ru.kolesnikov.simplechat.model.ErrorModel;
 import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class AuthorizationTests extends TestAbstractIntegration {
 
@@ -70,123 +68,156 @@ public class AuthorizationTests extends TestAbstractIntegration {
 
     @Test
     void checkUserAuthorizationCorrect() {
-        Boolean result = containerAuthTestMethods
+        var result = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
                         userRegistration.getPassword()))
                 .assertThat()
                 .statusCode(200)
                 .extract()
-                .as(Boolean.class);
-        assertThat("Bad return value", true, is(result));
+                .response();
+        assertThat("Bad return value", result, notNullValue());
 
     }
 
     @Test
     void checkUserAuthorizationNotCorrectLogin() {
-        Boolean result = containerAuthTestMethods
+        var result = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin() + 1,
                         userRegistration.getPassword()))
                 .assertThat()
-                .statusCode(200)
-                .extract()
-                .as(Boolean.class);
-        assertThat("Bad return value", false, is(result));
+                .statusCode(403);
     }
 
     @Test
     void checkUserAuthorizationNotCorrectPassword() {
-        Boolean result = containerAuthTestMethods
+        var result = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
                         userRegistration.getPassword() + 1))
                 .assertThat()
-                .statusCode(200)
+                .statusCode(403)
                 .extract()
-                .as(Boolean.class);
-        assertThat("Bad return value", false, is(result));
+                .response();
+        assertThat("Bad return value", result.getHeader("Authorization"), nullValue());
     }
 
 
     @Test
     void checkUserAuthorizationNotCorrectPasswordNull() {
-        var errorModel = containerAuthTestMethods
+        var response = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
                         null))
                 .assertThat()
-                .statusCode(400)
+                .statusCode(403)
                 .extract()
-                .as(ErrorModel.class);
-        assertThat("Bad return value", errorModel.getMessage(),
-                equalTo("Invalid data: password field should be filled"));
+                .response();
+        assertThat("Bad return value", response.getHeader("Authorization"), nullValue());
 
     }
 
     @Test
     void checkUserAuthorizationNotCorrectPasswordEmpty() {
-        var errorModel = containerAuthTestMethods
+        var response = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
                         ""))
                 .assertThat()
-                .statusCode(400)
+                .statusCode(403)
                 .extract()
-                .as(ErrorModel.class);
-        assertThat("Bad return value", errorModel.getMessage(),
-                equalTo("Invalid data: password must be minimum 8 characters long"));
+                .response();
+        assertThat("Bad return value", response.getHeader("Authorization"), nullValue());
     }
 
     @Test
     void checkUserAuthorizationNotCorrectLoginNull() {
-        var errorModel = containerAuthTestMethods
+        var response = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth(null,
                         userRegistration.getPassword()))
                 .assertThat()
-                .statusCode(400)
+                .statusCode(403)
                 .extract()
-                .as(ErrorModel.class);
-        assertThat("Bad return value", errorModel.getMessage(),
-                equalTo("Invalid data: login field should be filled"));
+                .response();
+        assertThat("Bad return value", response.getHeader("Authorization"), nullValue());
 
     }
 
     @Test
     void checkUserAuthorizationNotCorrectLoginEmpty() {
-        var errorModel = containerAuthTestMethods
+        var response = containerAuthTestMethods
                 .checkUserAuthorization(new TestUserDTOAuth("",
                         userRegistration.getPassword()))
                 .assertThat()
-                .statusCode(400)
+                .statusCode(403)
                 .extract()
-                .as(ErrorModel.class);
-        assertThat("Bad return value", errorModel.getMessage(),
-                equalTo("Invalid data: login must be minimum 2 characters long"));
+                .response();
+        assertThat("Bad return value", response.getHeader("Authorization"), nullValue());
     }
+
+    @Test
+    void checkLogoutOnceAndSecondStillGetPermission() {
+        String token = containerAuthTestMethods
+                .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()));
+        TestUserDTORegistration userRegistration1 = new TestUserDTORegistration(userRegistration.getLogin() + 1,
+                userRegistration.getName() + 1,
+                userRegistration.getSurname() + 1,
+                userRegistration.getPassword() + 1
+                , ""
+        );
+
+        containerUserTestMethods.addUser(userRegistration1).assertThat().statusCode(200)
+                .extract().as(UserDTOResponse.class);
+
+        String token1 = containerAuthTestMethods
+                .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration1.getLogin(),
+                        userRegistration1.getPassword()));
+
+
+        containerAuthTestMethods.logout(userRegistration.getLogin(), token)
+                .assertThat()
+                .statusCode(200);
+
+        var list = containerAuthTestMethods.getAllActiveUsers(userRegistration1.getLogin(), token1)
+                .assertThat()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList("", String.class);
+        assertThat("List of active users is wrong",
+                list, equalTo(List.of(userRegistration1.getLogin())));
+
+        containerAuthTestMethods.logout(userRegistration1.getLogin(), token1)
+                .assertThat()
+                .statusCode(200);
+
+    }
+
 
     @Test
     void checkLogout() {
-        containerAuthTestMethods
-                .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
-                        userRegistration.getPassword()))
+        String token = containerAuthTestMethods
+                .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()));
+        containerAuthTestMethods.logout(userRegistration.getLogin(), token)
                 .assertThat()
                 .statusCode(200);
-        containerAuthTestMethods.logout(userRegistration.getLogin())
-                .assertThat()
-                .statusCode(204);
+
+
     }
 
-    @Test
-    void checkLogoutWithOutLogin() {
-        containerAuthTestMethods.logout(user.getLogin())
-                .assertThat()
-                .statusCode(400);
-    }
+//    @Test
+//    void checkLogoutWithOutLogin() {
+//        containerAuthTestMethods.logout(user.getLogin())
+//                .assertThat()
+//                .statusCode(400);
+//    }
 
     @Test
     void checkGetAllActiveUsers() {
-        containerAuthTestMethods
-                .checkUserAuthorization(new TestUserDTOAuth(userRegistration.getLogin(),
-                        userRegistration.getPassword()))
-                .assertThat()
-                .statusCode(200);
-        var list = containerAuthTestMethods.getAllActiveUsers(user.getLogin())
+        String token = containerAuthTestMethods
+                .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()));
+
+        var list = containerAuthTestMethods.getAllActiveUsers(user.getLogin(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -199,8 +230,8 @@ public class AuthorizationTests extends TestAbstractIntegration {
 
     @Test
     void checkGetAllActiveWithoutAuthUsers() {
-        containerAuthTestMethods.getAllActiveUsers(user.getLogin())
+        containerAuthTestMethods.getAllActiveUsers(user.getLogin(), user.getLogin())
                 .assertThat()
-                .statusCode(400);
+                .statusCode(403);
     }
 }

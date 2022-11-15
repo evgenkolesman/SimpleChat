@@ -9,6 +9,7 @@ import ru.kolesnikov.simplechat.controller.dto.MessageDTORequest;
 import ru.kolesnikov.simplechat.utils.UriComponentsBuilderUtil;
 
 import static io.restassured.RestAssured.given;
+import static ru.kolesnikov.simplechat.security.AuthorizationFilter.AUTHORIZATION;
 
 @Component
 public class ContainerMessageTestMethods {
@@ -19,9 +20,11 @@ public class ContainerMessageTestMethods {
 
 
     public ValidatableResponse addMessage(String login,
-                                          MessageDTORequest message) {
+                                          MessageDTORequest message,
+                                          String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .body(message)
                 .when()
                 .post(UriComponentsBuilderUtil
@@ -34,9 +37,11 @@ public class ContainerMessageTestMethods {
 
     }
 
-    public ValidatableResponse getAllMessagesWithLogin(String login) {
+    public ValidatableResponse getAllMessagesWithLogin(String login,
+                                                       String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
@@ -50,9 +55,11 @@ public class ContainerMessageTestMethods {
 
     public ValidatableResponse updateMessage(String login,
                                              String id,
-                                             MessageDTORequest message) {
+                                             MessageDTORequest message,
+                                             String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .body(message)
                 .when()
                 .put(UriComponentsBuilderUtil
@@ -66,9 +73,11 @@ public class ContainerMessageTestMethods {
     }
 
     public ValidatableResponse getMessageById(String login,
-                                              String id) {
+                                              String id,
+                                              String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
@@ -81,9 +90,11 @@ public class ContainerMessageTestMethods {
     }
 
     public ValidatableResponse deleteMessage(String login,
-                                             String id) {
+                                             String id,
+                                             String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .delete(UriComponentsBuilderUtil
                         .builder()

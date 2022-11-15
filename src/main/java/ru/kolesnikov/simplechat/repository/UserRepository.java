@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
     @Query(value = "delete from users ", nativeQuery = true)
     void deleteAll();
+
+    Optional<User> findUserByLogin(String login);
 }

@@ -7,6 +7,7 @@ import ru.kolesnikov.simplechat.controller.containermethods.dto.TestUserDTOAuth;
 import ru.kolesnikov.simplechat.utils.UriComponentsBuilderUtil;
 
 import static io.restassured.RestAssured.given;
+import static ru.kolesnikov.simplechat.security.AuthorizationFilter.AUTHORIZATION;
 
 @Component
 public class ContainerAuthTestMethods {
@@ -31,13 +32,20 @@ public class ContainerAuthTestMethods {
 
     }
 
-    public ValidatableResponse logout(String login) {
+    public String checkAuthAndReturnToken(TestUserDTOAuth user) {
+        return checkUserAuthorization(user).extract()
+                .header("Token");
+    }
+
+    public ValidatableResponse logout(String login, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .delete(UriComponentsBuilderUtil
                         .builder()
-                        .replacePath(USERS_PATH + login + LOGOUT)
+//                        .replacePath(USERS_PATH + login + LOGOUT)
+                        .replacePath(LOGOUT)
                         .toUriString())
                 .then()
                 .and().log()
@@ -45,13 +53,14 @@ public class ContainerAuthTestMethods {
 
     }
 
-    public ValidatableResponse getAllActiveUsers(String login) {
+    public ValidatableResponse getAllActiveUsers(String userLogin, String token) {
         return given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, "Bearer " + token)
                 .when()
                 .get(UriComponentsBuilderUtil
                         .builder()
-                        .replacePath(USERS_PATH + login + ACTIVE_USERS)
+                        .replacePath(USERS_PATH + userLogin + ACTIVE_USERS)
                         .toUriString())
                 .then()
                 .and().log()

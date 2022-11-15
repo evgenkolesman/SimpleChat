@@ -2,19 +2,28 @@ package ru.kolesnikov.simplechat.exceptionhandler;
 
 import com.devskiller.friendly_id.FriendlyId;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import ru.kolesnikov.simplechat.exceptions.*;
 import ru.kolesnikov.simplechat.model.ErrorModel;
 
 import java.util.Optional;
 
 @ControllerAdvice
+@RestController
 @Slf4j
 public class RestResponseEntityExceptionHandler {
+    private final Environment environment;
+
+    public RestResponseEntityExceptionHandler(Environment environment) {
+        this.environment = environment;
+    }
 
     @ExceptionHandler
     protected ResponseEntity<ErrorModel> handleException(UserNotFoundException exception) {
@@ -69,12 +78,12 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler
     protected ResponseEntity<ErrorModel> handleException(NotAuthorizedException exception) {
         var errorId = FriendlyId.createFriendlyId();
-        var errorMessage = "You should be logged";
+        var errorMessage = environment.getProperty("exceptions.notEnoughPermissions");
         log.info(String.format("%s %s", errorId, exception.getMessage()));
         return new ResponseEntity<>(new ErrorModel(errorId,
                 errorMessage,
-                HttpStatus.BAD_REQUEST),
-                HttpStatus.BAD_REQUEST);
+                HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS),
+                HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
 
 

@@ -1,18 +1,21 @@
 package ru.kolesnikov.simplechat.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.kolesnikov.simplechat.controller.dto.UserDTOAuth;
 import ru.kolesnikov.simplechat.exceptions.UserNotFoundException;
 import ru.kolesnikov.simplechat.exceptions.UserWasRegisteredException;
 import ru.kolesnikov.simplechat.model.User;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -55,13 +58,22 @@ public class UserService {
         userRepository.delete(findUserByLogin(login));
     }
 
-    public boolean checkAuthorization(UserDTOAuth user) {
+    public boolean checkAuthorization(String login) {
         return userRepository
-                .findUserByLoginAndPassword(
-                        user.getLogin(),
-                        user.getPassword())
+                .findUserByLogin(
+                        login)
                 .isPresent();
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+//        new org.springframework.security.core.userdetails.User()
+        User userEntity = findUserByLogin(login);
+        if (userEntity == null) {
+            throw new NullPointerException();
+        }
+        return new org.springframework.security.core.userdetails.User(userEntity.getLogin(), userEntity.getPassword(),
+                true, true, true, true, new ArrayList<>());
+    }
 }

@@ -2,10 +2,10 @@ version: "3.5"
 services:
   simplechat:
     image: euhenios/simplechat:latest
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    container_name: simplechat
+#        build:
+#          context: .
+#          dockerfile: Dockerfile
+#        container_name: simplechat
     depends_on:
       - postgres
       - broker

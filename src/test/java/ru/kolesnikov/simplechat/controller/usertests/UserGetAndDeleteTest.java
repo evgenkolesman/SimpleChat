@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import ru.kolesnikov.simplechat.controller.TestAbstractIntegration;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerAuthTestMethods;
 import ru.kolesnikov.simplechat.controller.containermethods.ContainerUserTestMethods;
@@ -34,6 +36,9 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Autowired
     private AuthRepository authRepository;
+
+    @Autowired
+    private Environment environment;
 
     @LocalServerPort
     private int port;
@@ -68,10 +73,8 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getAllUsers() {
-        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
-                .assertThat()
-                .statusCode(200);
-        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers(user.getLogin())
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers(user.getLogin(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -82,11 +85,9 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getUserByLogin() {
-        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
-                .assertThat()
-                .statusCode(200);
+        var token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
 
-        UserDTOResponse userResponse = containerUserTestMethods.getUserByLogin(user.getLogin())
+        UserDTOResponse userResponse = containerUserTestMethods.getUserByLogin(user.getLogin(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -97,37 +98,36 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getUserByWrongLogin() {
-        var errorModel = containerUserTestMethods.getUserByLogin(user.getName())
+        var response = containerUserTestMethods.getUserByLogin(user.getName(), "Ds")
                 .assertThat()
-                .statusCode(400)
+                .statusCode(403)
                 .extract()
-                .body()
                 .as(ErrorModel.class);
-        assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+        assertThat("Bad data returned", response.getMessage(),
+                equalTo("Wrong token"));
     }
 
     @Test
     void deleteUserByLogin() {
-        authTestMethods.checkUserAuthorization(new TestUserDTOAuth(user.getLogin(), password))
-                .assertThat()
-                .statusCode(200);
-        containerUserTestMethods.deleteUser(user.getLogin())
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+        containerUserTestMethods.deleteUser(user.getLogin(), token)
                 .assertThat()
                 .statusCode(204);
     }
 
     @Test
     void deleteUserByBadLogin() {
-        var errorModel = containerUserTestMethods.deleteUser(user.getName())
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+
+        var errorModel = containerUserTestMethods.deleteUser(user.getName(), token)
                 .assertThat()
-                .statusCode(400)
+                .statusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value())
                 .extract()
-                .body()
                 .as(ErrorModel.class);
 
         assertThat("Bad data returned", errorModel.getMessage(),
-                equalTo("You should be logged"));
+                equalTo(environment.getProperty("exceptions.notEnoughPermissions")));
+        ;
 
     }
 

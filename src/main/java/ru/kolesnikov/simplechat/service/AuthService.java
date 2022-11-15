@@ -25,7 +25,7 @@ public class AuthService {
     }
 
     public boolean checkAccess(String login) {
-        return authRepository.existsAccessModelByLogin(login);
+        return authRepository.existsAccessModelByLogin(login).isPresent();
     }
 
     public List<String> getAllActiveLogins() {
