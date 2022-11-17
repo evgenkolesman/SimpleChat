@@ -204,13 +204,6 @@ public class AuthorizationTests extends TestAbstractIntegration {
 
     }
 
-//    @Test
-//    void checkLogoutWithOutLogin() {
-//        containerAuthTestMethods.logout(user.getLogin())
-//                .assertThat()
-//                .statusCode(400);
-//    }
-
     @Test
     void checkGetAllActiveUsers() {
         String token = containerAuthTestMethods
@@ -234,4 +227,17 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 .assertThat()
                 .statusCode(403);
     }
+
+     @Test
+    void checkGetAllActiveWithBadLoginAuthUsers() {
+         String token = containerAuthTestMethods
+                 .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
+                         userRegistration.getPassword()));
+
+         containerAuthTestMethods.getAllActiveUsers(user.getName(), token)
+                .assertThat()
+                .statusCode(451);
+    }
+
+
 }

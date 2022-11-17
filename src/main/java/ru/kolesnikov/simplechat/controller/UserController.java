@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.kolesnikov.simplechat.controller.dto.UserDTORegistration;
 import ru.kolesnikov.simplechat.controller.dto.UserDTOResponse;
 import ru.kolesnikov.simplechat.model.User;
-import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
 
 import javax.validation.Valid;
@@ -22,11 +21,10 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final AuthService authService;
 
     @GetMapping(value = "/api/v1/user/{login}/allusers")
     public List<UserDTOResponse> getAllUsers(@PathVariable String login) {
-        authService.checkAccess(login);
+
         return userService.getAllUsers()
                 .stream()
                 .map(user ->
@@ -40,6 +38,7 @@ public class UserController {
     //    Registration
     @PostMapping(value = "/api/v1/user")
     public UserDTOResponse addUser(@RequestBody @Valid UserDTORegistration user) {
+
         userService.addUser(
                 new User(user.getLogin(),
                         user.getName(),
@@ -55,7 +54,6 @@ public class UserController {
 
     @GetMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse getUserByLogin(@PathVariable String login) {
-//        authService.checkNotAuthorized(login);
 
         User user = userService.findUserByLogin(login);
         return new UserDTOResponse(user.getLogin(),
@@ -66,7 +64,6 @@ public class UserController {
     @PutMapping(value = "/api/v1/user/{login}")
     public UserDTOResponse updateUser(@PathVariable String login,
                                       @RequestBody @Valid UserDTORegistration user) {
-        authService.checkNotAuthorized(login);
 
         User userUpdated = userService.updateUser(
                 login,
@@ -83,7 +80,6 @@ public class UserController {
     @DeleteMapping(value = "/api/v1/user/{login}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable String login) {
-        authService.checkNotAuthorized(login);
         userService.deleteUser(login);
     }
 

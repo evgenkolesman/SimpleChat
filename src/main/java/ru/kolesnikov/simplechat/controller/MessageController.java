@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTORequest;
 import ru.kolesnikov.simplechat.controller.dto.MessageDTOResponse;
 import ru.kolesnikov.simplechat.model.Message;
-import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.MessageService;
 import ru.kolesnikov.simplechat.service.UserService;
 
@@ -25,12 +24,10 @@ public class MessageController {
 
     private final MessageService messageService;
     private final UserService userService;
-    private final AuthService authService;
 
     @PostMapping("/api/v1/user/{login}/messages")
     public MessageDTOResponse addMessage(@PathVariable String login,
                                          @RequestBody MessageDTORequest messageDTORequest) {
-        authService.checkNotAuthorized(login);
 
         Message message = messageService.addMessage(
                 new Message(
@@ -50,7 +47,6 @@ public class MessageController {
 
     @GetMapping("/api/v1/user/{login}/messages")
     public List<MessageDTOResponse> getAllMessagesWithLogin(@PathVariable String login) {
-        authService.checkNotAuthorized(login);
 
         return messageService.getAllMessages(login).stream()
                 .map(message ->
@@ -66,7 +62,6 @@ public class MessageController {
     public MessageDTOResponse updateMessage(@PathVariable String login,
                                             @PathVariable String id,
                                             @RequestBody MessageDTORequest messageDTORequest) {
-        authService.checkNotAuthorized(login);
 
         Message message = messageService.updateMessage(
                 new Message(id,
@@ -85,7 +80,6 @@ public class MessageController {
     @GetMapping("/api/v1/user/{login}/messages/{id}")
     public MessageDTOResponse getMessageById(@PathVariable String login,
                                              @PathVariable String id) {
-        authService.checkNotAuthorized(login);
 
         Message message = messageService.getMessageById(login, id);
 
@@ -101,8 +95,6 @@ public class MessageController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMessage(@PathVariable String login,
                               @PathVariable String id) {
-        authService.checkNotAuthorized(login);
-
         messageService.deleteMessage(id);
     }
 

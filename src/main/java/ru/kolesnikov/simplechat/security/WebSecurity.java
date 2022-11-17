@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
@@ -18,8 +17,8 @@ import ru.kolesnikov.simplechat.service.UserService;
 @RequiredArgsConstructor
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
+    //    private final BCryptPasswordEncoder bCryptPasswordEncoder; may be need to add
     private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthService authService;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -38,10 +37,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(getAuthenticationFilter())
                 .addFilter(new AuthorizationFilter(authenticationManager()))
                 .logout(logout -> logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/api/v1/user")
-                                .logoutSuccessHandler(customLogoutHandler)
-                                .invalidateHttpSession(true)
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/api/v1/user")
+                        .logoutSuccessHandler(customLogoutHandler)
+                        .invalidateHttpSession(true)
                 );
         http.headers().frameOptions().disable();
     }
