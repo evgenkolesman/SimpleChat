@@ -17,7 +17,6 @@ import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,12 +32,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public static final String SECRET = "DSADDSAFewqrwrfvz";
     private final UserService userService;
     private final AuthService authService;
-    private final KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager,
                                 UserService userService,
                                 AuthService authService,
-                                KafkaTemplate kafkaTemplate) {
+                                KafkaTemplate<String, String> kafkaTemplate) {
         this.userService = userService;
         this.authService = authService;
         this.kafkaTemplate = kafkaTemplate;
@@ -74,7 +73,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
+                                            Authentication authResult) {
         String userName = ((User) authResult.getPrincipal()).getUsername();
 
 
@@ -85,7 +84,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             kafkaTemplate.send(KAFKA_TOPIC,
                     "AUTHORIZATION_TOKEN");
         } else {
-            log.info("NOT AUTHORIZED");
+            kafkaTemplate.send(KAFKA_TOPIC,
+                    "NOT AUTHORIZED");
         }
 
         ru.kolesnikov.simplechat.model.User user = userService.findUserByLogin(userName);

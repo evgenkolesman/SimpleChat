@@ -15,7 +15,7 @@ public class AccessModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "login")
+    @Column(name = "loginuser", unique = true)
     private String login;
 
     public AccessModel(String login) {

@@ -12,7 +12,6 @@ import ru.kolesnikov.simplechat.service.AuthService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static ru.kolesnikov.simplechat.security.AuthenticationFilter.SECRET;
 
@@ -20,7 +19,6 @@ import static ru.kolesnikov.simplechat.security.AuthenticationFilter.SECRET;
 @Slf4j
 public class CustomLogoutHandler implements LogoutHandler, LogoutSuccessHandler {
 
-    //    private final UserCache userCache;
     private final AuthService service;
 
     public CustomLogoutHandler(AuthService service) {
@@ -37,7 +35,7 @@ public class CustomLogoutHandler implements LogoutHandler, LogoutSuccessHandler 
     @Override
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
-                                Authentication authentication) throws IOException, ServletException {
+                                Authentication authentication) throws ServletException {
         log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< start logout");
         String login = Jwts.parser()
                 .setSigningKey(SECRET)

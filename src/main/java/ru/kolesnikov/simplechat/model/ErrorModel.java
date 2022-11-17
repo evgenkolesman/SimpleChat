@@ -1,6 +1,5 @@
 package ru.kolesnikov.simplechat.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
