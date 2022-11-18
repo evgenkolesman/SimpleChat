@@ -59,9 +59,9 @@ public class UserAddTest extends TestAbstractIntegration {
                         , photoPath
                 )).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
-        assertThat("User name should be equals", user.getName(), equalTo(name));
-        assertThat("User photoPath should be equals", user.getPhotoPath(), equalTo(photoPath));
-        assertThat("User login should be equals", user.getLogin(), equalTo(login));
+        assertThat("User name should be equals", user.name(), equalTo(name));
+        assertThat("User photoPath should be equals", user.photoPath(), equalTo(photoPath));
+        assertThat("User login should be equals", user.login(), equalTo(login));
     }
 
     @Test
@@ -76,9 +76,9 @@ public class UserAddTest extends TestAbstractIntegration {
                         , photoPath
                 )).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
-        assertThat("User name should be equals", user.getName(), equalTo(name));
-        assertThat("User photoPath should be equals", user.getPhotoPath(), equalTo(photoPath));
-        assertThat("User login should be equals", user.getLogin(), equalTo(login));
+        assertThat("User name should be equals", user.name(), equalTo(name));
+        assertThat("User photoPath should be equals", user.photoPath(), equalTo(photoPath));
+        assertThat("User login should be equals", user.login(), equalTo(login));
     }
 
     @Test

@@ -81,17 +81,17 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 password,
                 photoPath
         );
-        String token = containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(),
+        String token = containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(),
                 this.password));
 
         UserDTOResponse user = containerUserTestMethods.updateUser(
-                        this.user.getLogin(),
+                        this.user.login(),
                         userRegistrationUpdate,
                         token).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
-        assertThat("User name should be equals", user.getName(), equalTo(name));
-        assertThat("User photoPath should be equals", user.getPhotoPath(), equalTo(photoPath));
-        assertThat("User login should be equals", user.getLogin(), equalTo(login));
+        assertThat("User name should be equals", user.name(), equalTo(name));
+        assertThat("User photoPath should be equals", user.photoPath(), equalTo(photoPath));
+        assertThat("User login should be equals", user.login(), equalTo(login));
     }
 
 
@@ -135,7 +135,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
                 photoPath
         );
         String token =
-                containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), this.password));
+                containerAuthTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), this.password));
 
         var errorModel = containerUserTestMethods.updateUser(
                         "login10",

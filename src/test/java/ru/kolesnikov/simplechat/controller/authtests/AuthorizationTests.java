@@ -210,7 +210,7 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
                         userRegistration.getPassword()));
 
-        var list = containerAuthTestMethods.getAllActiveUsers(user.getLogin(), token)
+        var list = containerAuthTestMethods.getAllActiveUsers(user.login(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -218,23 +218,23 @@ public class AuthorizationTests extends TestAbstractIntegration {
                 .jsonPath()
                 .getList("", String.class);
         assertThat("List of active users is wrong",
-                list, equalTo(List.of(user.getLogin())));
+                list, equalTo(List.of(user.login())));
     }
 
     @Test
     void checkGetAllActiveWithoutAuthUsers() {
-        containerAuthTestMethods.getAllActiveUsers(user.getLogin(), user.getLogin())
+        containerAuthTestMethods.getAllActiveUsers(user.login(), user.login())
                 .assertThat()
                 .statusCode(403);
     }
 
-     @Test
+    @Test
     void checkGetAllActiveWithBadLoginAuthUsers() {
-         String token = containerAuthTestMethods
-                 .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
-                         userRegistration.getPassword()));
+        String token = containerAuthTestMethods
+                .checkAuthAndReturnToken(new TestUserDTOAuth(userRegistration.getLogin(),
+                        userRegistration.getPassword()));
 
-         containerAuthTestMethods.getAllActiveUsers(user.getName(), token)
+        containerAuthTestMethods.getAllActiveUsers(user.name(), token)
                 .assertThat()
                 .statusCode(451);
     }

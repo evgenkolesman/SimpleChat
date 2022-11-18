@@ -73,8 +73,8 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getAllUsers() {
-        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
-        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers(user.getLogin(), token)
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), password));
+        List<UserDTOResponse> list = containerUserTestMethods.getAllUsers(user.login(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -85,9 +85,9 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getUserByLogin() {
-        var token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+        var token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), password));
 
-        UserDTOResponse userResponse = containerUserTestMethods.getUserByLogin(user.getLogin(), token)
+        UserDTOResponse userResponse = containerUserTestMethods.getUserByLogin(user.login(), token)
                 .assertThat()
                 .statusCode(200)
                 .extract()
@@ -98,7 +98,7 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void getUserByWrongLogin() {
-        var response = containerUserTestMethods.getUserByLogin(user.getName(), "Ds")
+        var response = containerUserTestMethods.getUserByLogin(user.name(), "Ds")
                 .assertThat()
                 .statusCode(403)
                 .extract()
@@ -109,17 +109,17 @@ public class UserGetAndDeleteTest extends TestAbstractIntegration {
 
     @Test
     void deleteUserByLogin() {
-        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
-        containerUserTestMethods.deleteUser(user.getLogin(), token)
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), password));
+        containerUserTestMethods.deleteUser(user.login(), token)
                 .assertThat()
                 .statusCode(204);
     }
 
     @Test
     void deleteUserByBadLogin() {
-        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+        String token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), password));
 
-        var errorModel = containerUserTestMethods.deleteUser(user.getName(), token)
+        var errorModel = containerUserTestMethods.deleteUser(user.name(), token)
                 .assertThat()
                 .statusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value())
                 .extract()

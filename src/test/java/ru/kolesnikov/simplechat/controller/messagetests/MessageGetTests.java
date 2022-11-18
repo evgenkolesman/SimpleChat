@@ -77,7 +77,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
         user = userContainer.addUser(userRegistration).assertThat().statusCode(200)
                 .extract().as(UserDTOResponse.class);
-        token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.getLogin(), password));
+        token = authTestMethods.checkAuthAndReturnToken(new TestUserDTOAuth(user.login(), password));
     }
 
     @AfterEach
@@ -90,7 +90,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getMessageByIdCorrect() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -98,8 +98,8 @@ public class MessageGetTests extends TestAbstractIntegration {
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
-        var result = messageContainer.getMessageById(message.getLogin(),
-                        message.getId(),
+        var result = messageContainer.getMessageById(message.login(),
+                        message.id(),
                         token)
                 .assertThat()
                 .statusCode(200)
@@ -114,7 +114,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getMessageByIdNotCorrect() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -124,7 +124,7 @@ public class MessageGetTests extends TestAbstractIntegration {
                 .as(MessageDTOResponse.class);
         String badLogin = "dfsd";
         var errorModel = messageContainer.getMessageById(badLogin,
-                        message.getId(),
+                        message.id(),
                         token)
                 .assertThat()
                 .statusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value())
@@ -139,7 +139,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesWithLoginCorrect() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -147,7 +147,7 @@ public class MessageGetTests extends TestAbstractIntegration {
                 .extract()
                 .body()
                 .as(MessageDTOResponse.class);
-        var result = messageContainer.getAllMessagesWithLogin(message.getLogin(),
+        var result = messageContainer.getAllMessagesWithLogin(message.login(),
                         token)
                 .assertThat()
                 .statusCode(200)
@@ -161,7 +161,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesWithLoginWithBadLogin() {
-        messageContainer.addMessage(user.getLogin(),
+        messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -182,7 +182,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithDates() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -206,7 +206,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithEndDate() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -230,7 +230,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithStartDate() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -254,7 +254,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithOutDates() {
-        MessageDTOResponse message = messageContainer.addMessage(user.getLogin(),
+        MessageDTOResponse message = messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()
@@ -278,7 +278,7 @@ public class MessageGetTests extends TestAbstractIntegration {
 
     @Test
     void getAllMessagesCorrectWithEmptyResult() {
-        messageContainer.addMessage(user.getLogin(),
+        messageContainer.addMessage(user.login(),
                         messageDTORequest,
                         token)
                 .assertThat()

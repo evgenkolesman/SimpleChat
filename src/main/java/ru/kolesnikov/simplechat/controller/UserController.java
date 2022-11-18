@@ -40,15 +40,15 @@ public class UserController {
     public UserDTOResponse addUser(@RequestBody @Valid UserDTORegistration user) {
 
         userService.addUser(
-                new User(user.getLogin(),
-                        user.getName(),
-                        user.getSurname(),
-                        user.getPhotoPath(),
-                        user.getPassword()
+                new User(user.login(),
+                        user.name(),
+                        user.surname(),
+                        user.photoPath(),
+                        user.password()
                 ));
-        return new UserDTOResponse(user.getLogin(),
-                user.getName(),
-                user.getPhotoPath());
+        return new UserDTOResponse(user.login(),
+                user.name(),
+                user.photoPath());
     }
 
 
@@ -67,11 +67,11 @@ public class UserController {
 
         User userUpdated = userService.updateUser(
                 login,
-                new User(user.getLogin(),
-                        user.getName(),
-                        user.getSurname(),
-                        user.getPhotoPath(),
-                        user.getPassword()));
+                new User(user.login(),
+                        user.name(),
+                        user.surname(),
+                        user.photoPath(),
+                        user.password()));
         return new UserDTOResponse(userUpdated.getLogin(),
                 userUpdated.getName(),
                 userUpdated.getPhotoPath());

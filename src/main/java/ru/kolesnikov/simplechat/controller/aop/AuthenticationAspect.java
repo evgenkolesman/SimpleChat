@@ -35,7 +35,7 @@ public class AuthenticationAspect {
     @Before("execution(* " +
             "ru.kolesnikov.simplechat.controller.UserController.updateUser(String, ru.kolesnikov.simplechat.controller.dto.UserDTORegistration))")
     public void beforeUpdateUserAdvice(JoinPoint joinPoint) {
-        String method = "UserDTORegistration";
+        String method = "updateUser";
         randomAuthorization(joinPoint, method);
     }
 

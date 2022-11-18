@@ -1,17 +1,7 @@
 package ru.kolesnikov.simplechat.controller.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+public record UserDTOResponse(String login,
+                              String name,
+                              String photoPath) {
 
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public class UserDTOResponse {
-
-    private final String login;
-
-    private final String name;
-
-    private final String photoPath;
 }
