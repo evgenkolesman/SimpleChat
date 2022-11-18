@@ -81,7 +81,7 @@ public class MessageController {
     public MessageDTOResponse getMessageById(@PathVariable String login,
                                              @PathVariable String id) {
 
-        Message message = messageService.getMessageById(login, id);
+        Message message = messageService.getMessageById(id);
 
         return new MessageDTOResponse(
                 message.getId(),

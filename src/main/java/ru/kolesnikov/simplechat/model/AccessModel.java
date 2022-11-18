@@ -1,13 +1,19 @@
 package ru.kolesnikov.simplechat.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-@Entity
-@Table(name = "access")
+
+@Document
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class AccessModel {
 

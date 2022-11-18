@@ -14,8 +14,9 @@ public abstract class TestAbstractIntegration {
 
     @BeforeAll
     static void init() {
-        TestContainersInitializer.container.start();
+        TestContainersInitializer.postgresDBContainer.start();
         TestContainersInitializer.kafka.start();
+        TestContainersInitializer.mongoDBContainer.start();
     }
 
 }

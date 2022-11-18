@@ -9,6 +9,7 @@ import ru.kolesnikov.simplechat.repository.AuthRepository;
 import ru.kolesnikov.simplechat.repository.UserRepository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +23,7 @@ public class AuthService {
     public void authorize(String login) {
         if (!checkAccess(login)) {
             if (userRepository.existsById(login)) {
-                authRepository.save(new AccessModel(login));
+                authRepository.save(new AccessModel(UUID.randomUUID().getLeastSignificantBits(), login));
             } else {
                 checkNotAuthorized(login);
             }

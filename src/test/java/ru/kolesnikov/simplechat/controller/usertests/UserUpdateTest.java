@@ -40,8 +40,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
     private int port;
 
     private UserDTOResponse user;
-    private TestUserDTORegistration userRegistration;
-    private String password = "password";
+    private final String password = "password";
 
     @BeforeEach
     void testDataProduce() {
@@ -50,7 +49,7 @@ public class UserUpdateTest extends TestAbstractIntegration {
         var name = "name";
         var login = "login";
         var photoPath = "photoPath";
-        userRegistration = new TestUserDTORegistration(login,
+        TestUserDTORegistration userRegistration = new TestUserDTORegistration(login,
                 name,
                 "surname",
                 password

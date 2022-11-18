@@ -49,7 +49,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public Message getMessageById(String login, String id) {
+    public Message getMessageById(String id) {
 
         return messageRepository
                 .findMessageById(id)

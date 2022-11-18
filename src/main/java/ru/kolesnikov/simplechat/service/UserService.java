@@ -68,7 +68,6 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-//        new org.springframework.security.core.userdetails.User()
         User userEntity = findUserByLogin(login);
         if (userEntity == null) {
             throw new NullPointerException();

@@ -180,7 +180,7 @@ public class UserAddTest extends TestAbstractIntegration {
         var name = "name";
         String login = null;
         var photoPath = "photoPath";
-        var errorModel = containerUserTestMethods.addUser(new TestUserDTORegistration(login,
+        var errorModel = containerUserTestMethods.addUser(new TestUserDTORegistration(null,
                         name,
                         "surname",
                         "password"
@@ -199,7 +199,7 @@ public class UserAddTest extends TestAbstractIntegration {
         var login = "login";
         var photoPath = "photoPath";
         var errorModel = containerUserTestMethods.addUser(new TestUserDTORegistration(login,
-                        name,
+                        null,
                         "surname",
                         "password"
                         , photoPath
@@ -235,7 +235,7 @@ public class UserAddTest extends TestAbstractIntegration {
 
         var errorModel = containerUserTestMethods.addUser(new TestUserDTORegistration(login,
                         name,
-                        surname,
+                        null,
                         "password"
                         , photoPath
                 )).assertThat().statusCode(400)
