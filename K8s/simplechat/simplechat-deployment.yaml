@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat
+  labels:
+    app: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat
+  template:
+    metadata:
+      labels:
+        app: simplechat
+    spec:
+      containers:
+        - name: simplechat
+          image: euhenios/simplechat:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chatdb-secret
+                  key: postgres-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chatdb-secret
+                  key: postgres-password
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: chatdb-configmap
+                  key: database_url
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom: "kafka-broker:9092"
+            - name: SPRING_DATA_MONGODB_HOST
+              value: "mongo"
+            - name: MONGO_DB
+              value: "chat_mongo"
+            - name: MONGO_USER
+              value: "admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-boot-service
+spec:
+  selector:
+    app: spring-boot
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 32100

@@ -5,13 +5,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.concurrent.ListenableFuture;
 import ru.kolesnikov.simplechat.model.LoginRequestModel;
 import ru.kolesnikov.simplechat.service.AuthService;
 import ru.kolesnikov.simplechat.service.UserService;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import static ru.kolesnikov.simplechat.kafka.KafkaTopicConfig.KAFKA_TOPIC;
 
@@ -81,8 +85,20 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         if (checkAuthorization) {
             authService.authorize(userName);
-            kafkaTemplate.send(KAFKA_TOPIC,
+            ListenableFuture<SendResult<String, String>> futureResponse = kafkaTemplate.send(KAFKA_TOPIC,
                     "AUTHORIZATION_TOKEN");
+            try {
+                ProducerRecord<String, String> producerRecord = futureResponse.get().getProducerRecord();
+                log.info("=============== Log KAFKA " + producerRecord.headers().toString());
+                log.info("=============== Log KAFKA topic " + producerRecord.topic());
+                log.info("=============== Log KAFKA partition " + producerRecord.partition());
+                log.info("=============== Log KAFKA value " + producerRecord.value());
+                log.info("=============== Log KAFKA key " + producerRecord.key());
+            } catch (InterruptedException|ExecutionException e) {
+                log.info(e.getMessage());
+                e.printStackTrace();
+            }
+
         } else {
             kafkaTemplate.send(KAFKA_TOPIC,
                     "NOT AUTHORIZED");

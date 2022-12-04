@@ -1,16 +1,17 @@
 package ru.kolesnikov.simplechat.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import net.bytebuddy.implementation.bind.annotation.Default;
+import org.mapstruct.Named;
+import org.mapstruct.Qualifier;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = {"login"}))
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
 

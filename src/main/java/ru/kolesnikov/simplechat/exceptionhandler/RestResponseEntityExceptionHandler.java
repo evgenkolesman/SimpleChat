@@ -15,7 +15,6 @@ import ru.kolesnikov.simplechat.model.ErrorModel;
 import java.util.Optional;
 
 @ControllerAdvice
-@RestController
 @Slf4j
 public class RestResponseEntityExceptionHandler {
     private final Environment environment;
