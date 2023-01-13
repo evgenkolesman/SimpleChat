@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chatdb-deployment
+  namespace: simplechat
   labels:
     app: chatdb
 spec:
@@ -17,29 +18,18 @@ spec:
       containers:
         - name: chatdb
           image: postgres:14.3-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: chatdb-secret
-                  key: postgres-username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: chatdb-secret
-                  key: postgres-password
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: chatdb-configmap
-                  key: postgres-db
+          envFrom:
+            - configMapRef:
+                name: configmap-chatdb
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: chatdb-service
+  namespace: simplechat
 spec:
   selector:
     app: chatdb

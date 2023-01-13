@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat
+  namespace: simplechat
+  labels:
+    app: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat
+  template:
+    metadata:
+      labels:
+        app: simplechat
+    spec:
+      containers:
+        - name: simplechat
+          image: euhenios/simplechat:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+#          envFrom:
+#            - configMapRef:
+#                name: configmap-chatdb
+#            - configMapRef:
+#                name: configmap-mongo
+#            - configMapRef:
+#                name: configmap-kafka
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-chatdb
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-chatdb
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-chatdb
+                  key: DATABASE_URL
+            - name: SPRING_DATA_MONGODB_HOST
+              value: mongodb
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-broker:9092"
+#            - name: spring.kafka.bootstrap-servers
+#              value: kafka-broker:9092
+
+
+#              value: PLAINTEXT://kafka-broker:9092
+#            - name: SPRING_KAFKA
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: configmap-mongodb
+#                  key: SPRING_DATA_MONGODB_HOST
+#            - name: SPRING_DATA_MONGODB_PORT
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: configmap-mongodb
+#                  key: SPRING_DATA_MONGODB_PORT
+#            - name: SPRING_DATA_MONGODB_DATABASE
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: configmap-mongodb
+#                  key: SPRING_DATA_MONGODB_DATABASE
+#            - name: SPRING_DATA_MONGODB_USERNAME
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: configmap-mongodb
+#                  key: SPRING_DATA_MONGODB_USERNAME
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: configmap-chatdb
+#                  key: DATABASE_URL
+
+#            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+#              value: PLAINTEXT://kafka-broker:9092
+#            - name: SPRING_DATA_MONGODB_HOST
+#              value: "mongodb-service"
+#            - name: MONGO_DB
+#              value: "chat_mongo"
+#            - name: MONGO_USER
+#              value: "admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplechat-service
+  namespace: simplechat
+spec:
+  selector:
+    app: simplechat
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+#      nodePort: 32100

@@ -1,0 +1,41 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  labels:
+#    app: kafka-broker
+#  name: kafka-broker
+#  namespace: simplechat
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: kafka-broker
+#  template:
+#    metadata:
+#      labels:
+#        app: kafka-broker
+#    spec:
+#      hostname: kafka-broker
+#      containers:
+#        - image: confluentinc/cp-kafka:7.0.0
+#          imagePullPolicy: IfNotPresent
+#          name: kafka-broker
+#          ports:
+#            - containerPort: 9092
+#          envFrom:
+#            - configMapRef:
+#                name: configmap-kafka
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  labels:
+#    app: kafka-broker
+#  name: kafka-service
+#  namespace: simplechat
+#spec:
+#  ports:
+#    - port: 9092
+#  selector:
+#    app: kafka-broker
+#
