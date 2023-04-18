@@ -1,0 +1,29 @@
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: simplechat-ingress
+#  namespace: simplechat
+#  labels:
+#    app: simplechat
+#spec:
+#  ingressClassName: nginx
+#  rules:
+#      - host: simplechat.nginx.mydomain.com
+#        http:
+#          paths:
+#            - backend:
+#                service:
+#                  name: simplechat
+#                  port:
+#                    number:
+#                      8880
+#              path: /
+#              pathType: Prefix
+#  defaultBackend:
+#    service:
+#      name: simplechat
+#      port:
+#        number: 8080
+
+
+

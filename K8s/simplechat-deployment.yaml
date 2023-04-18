@@ -21,6 +21,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+
 #          envFrom:
 #            - configMapRef:
 #                name: configmap-chatdb
@@ -95,9 +96,36 @@ metadata:
 spec:
   selector:
     app: simplechat
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - protocol: TCP
-      port: 8080
+      port: 8880
       targetPort: 8080
-#      nodePort: 32100
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simplechat-ingress
+  namespace: simplechat
+  labels:
+    app: simplechat
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nginx.ver
+      http:
+        paths:
+          - backend:
+              service:
+                name: simplechat-service
+                port:
+                  number:
+                    8880
+            path: /source(/|$)(.*)
+            pathType: Prefix
+  defaultBackend:
+    service:
+      name: simplechat-service
+      port:
+        number: 8080
